@@ -6,20 +6,22 @@ public class Homme extends AbstractHuman<Femme> {
         this.id = id;
         this.pref_list = new ArrayList<>();
         this.boundedTo = null;
+        this.index = 0;
     }
 
     /**  Man ask his better pref of woman, if she accepts, they are bounded, else nothing happen  */
     public Homme ask(Femme f){
         Homme evince = f.compare(this);
         if (evince == null || evince.getId() != this.getId()){
-            this.set(f);
+            this.setBounded(f);
         }
         return evince;
     }
 
-    @Override protected void generateRandomPrefList(int range, ArrayList<Femme> humans){
+    @Override
+    protected void generateRandomPrefList(int range, ArrayList<Femme> humans,int seed){
         ArrayList<Femme> pref = new ArrayList<>();
-        Random rand = new Random();
+        Random rand = new Random(seed);
         int val;
         while(pref.size() < Main.PLAYSET){
             val = Math.abs(rand.nextInt()) % range;

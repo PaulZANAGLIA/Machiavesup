@@ -7,14 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar:///Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home/lib/jrt-fs.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="com.github.dpaukov:combinatoricslib3:3.3.3" level="project" />
+    <orderEntry type="library" name="com.googlecode.combinatoricslib:combinatoricslib:2.3" level="project" />
   </component>
 </module>

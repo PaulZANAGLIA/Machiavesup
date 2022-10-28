@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="com.googlecode.combinatoricslib:combinatoricslib:2.3" type="repository">
+    <properties maven-id="com.googlecode.combinatoricslib:combinatoricslib:2.3" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/googlecode/combinatoricslib/combinatoricslib/2.3/combinatoricslib-2.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

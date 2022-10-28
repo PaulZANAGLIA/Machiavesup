@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="222e604f-fa77-4e56-9083-164f2a515cf2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/com_github_dpaukov_combinatoricslib3_3_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/com_googlecode_combinatoricslib_combinatoricslib_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Machiavesup.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gale_shap.iml" beforeDir="false" afterPath="$PROJECT_DIR$/gale_shap.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AbstractHuman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AbstractHuman.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Femme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Femme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Homme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Homme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2GfgWaGf43F6dv8CrHcmNtYau76" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="Machiavesup" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="222e604f-fa77-4e56-9083-164f2a515cf2" name="Default Changelist" comment="" />
+      <created>1666361190454</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1666361190454</updated>
+      <workItem from="1666361192495" duration="5378000" />
+      <workItem from="1666785086027" duration="26000" />
+      <workItem from="1666785121126" duration="1936000" />
+      <workItem from="1666870991115" duration="26046000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1398" height="304" key="GridCell.Tab.0.bottom" timestamp="1666968761989">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="317" key="GridCell.Tab.0.bottom/0.0.1440.900/1440.25.2560.1415@0.0.1440.900" timestamp="1666538991487" />
+    <state width="1398" height="304" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1666968761989" />
+    <state width="1398" height="304" key="GridCell.Tab.0.center" timestamp="1666968761987">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="317" key="GridCell.Tab.0.center/0.0.1440.900/1440.25.2560.1415@0.0.1440.900" timestamp="1666538991395" />
+    <state width="1398" height="304" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1666968761987" />
+    <state width="1398" height="304" key="GridCell.Tab.0.left" timestamp="1666968761987">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="317" key="GridCell.Tab.0.left/0.0.1440.900/1440.25.2560.1415@0.0.1440.900" timestamp="1666538991394" />
+    <state width="1398" height="304" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1666968761987" />
+    <state width="1398" height="304" key="GridCell.Tab.0.right" timestamp="1666968761988">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="317" key="GridCell.Tab.0.right/0.0.1440.900/1440.25.2560.1415@0.0.1440.900" timestamp="1666538991407" />
+    <state width="1398" height="304" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1666968761988" />
+    <state width="1398" height="304" key="GridCell.Tab.1.bottom" timestamp="1666968761991">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1666968761991" />
+    <state width="1398" height="304" key="GridCell.Tab.1.center" timestamp="1666968761990">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1666968761990" />
+    <state width="1398" height="304" key="GridCell.Tab.1.left" timestamp="1666968761989">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1666968761989" />
+    <state width="1398" height="304" key="GridCell.Tab.1.right" timestamp="1666968761991">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1666968761991" />
+    <state x="342" y="153" key="NewModule_or_Project.wizard" timestamp="1666531109814">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="342" y="153" key="NewModule_or_Project.wizard/0.0.1440.900/1440.25.2560.1415@0.0.1440.900" timestamp="1666531109814" />
+    <state x="208" y="28" key="SettingsEditor" timestamp="1666363402084">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="208" y="28" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1666363402084" />
+    <state x="433" y="346" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1666363397231">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="433" y="346" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1440.900@0.0.1440.900" timestamp="1666363397231" />
+    <state x="458" y="202" key="extract.method.dialog" timestamp="1666874072920">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="458" y="202" key="extract.method.dialog/0.0.1440.900@0.0.1440.900" timestamp="1666874072920" />
+    <state x="126" y="69" key="new project wizard" timestamp="1666531304571">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="126" y="69" key="new project wizard/0.0.1440.900/1440.0.2560.1440@0.0.1440.900" timestamp="1666531304571" />
+    <state x="126" y="69" key="new project wizard/0.0.1440.900/1440.25.2560.1415@0.0.1440.900" timestamp="1666531076524" />
+    <state x="420" y="220" key="refactoring.ChangeSignatureDialog" timestamp="1666960898818">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="420" y="220" key="refactoring.ChangeSignatureDialog/0.0.1440.900@0.0.1440.900" timestamp="1666960898818" />
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1666887015222">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1666887015222" />
+  </component>
+</project>

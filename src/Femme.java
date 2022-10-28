@@ -13,15 +13,15 @@ public class Femme extends AbstractHuman<Homme>{
     protected Homme compare(Homme m){
         if(this.getBounded() == null || this.pref_list.indexOf(m) < this.pref_list.indexOf(this.getBounded())){
             Homme evince = this.getBounded();
-            this.set(null);
-            this.set(m);
+            this.setBounded(null);
+            this.setBounded(m);
             return evince;
         }
         return m;
     }
-    @Override protected void generateRandomPrefList(int range, ArrayList<Homme> humans){
+    @Override protected void generateRandomPrefList(int range, ArrayList<Homme> humans,int seed){
         ArrayList<Homme> pref = new ArrayList<>();
-        Random rand = new Random();
+        Random rand = new Random(seed);
         int val;
         while(pref.size() < Main.PLAYSET){
             val = Math.abs(rand.nextInt()) % range;
