@@ -20,19 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="222e604f-fa77-4e56-9083-164f2a515cf2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/com_github_dpaukov_combinatoricslib3_3_3_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/com_googlecode_combinatoricslib_combinatoricslib_2_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Machiavesup.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gale_shap.iml" beforeDir="false" afterPath="$PROJECT_DIR$/gale_shap.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AbstractHuman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/AbstractHuman.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Femme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Femme.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Homme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Homme.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,6 +88,7 @@
       <workItem from="1666785086027" duration="26000" />
       <workItem from="1666785121126" duration="1936000" />
       <workItem from="1666870991115" duration="26046000" />
+      <workItem from="1666968789136" duration="523000" />
     </task>
     <servers />
   </component>
