@@ -18,6 +18,16 @@ public class Homme extends AbstractHuman<Femme> {
         return evince;
     }
 
+    protected Femme compare(Femme m){
+        if(this.getBounded() == null || this.pref_list.indexOf(m) < this.pref_list.indexOf(this.getBounded())){
+            Femme evince = this.getBounded();
+            this.setBounded(null);
+            this.setBounded(m);
+            return evince;
+        }
+        return m;
+    }
+
     @Override
     protected void generateRandomPrefList(int range, ArrayList<Femme> humans,int seed){
         ArrayList<Femme> pref = new ArrayList<>();

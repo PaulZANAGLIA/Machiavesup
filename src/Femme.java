@@ -19,7 +19,17 @@ public class Femme extends AbstractHuman<Homme>{
         }
         return m;
     }
-    @Override protected void generateRandomPrefList(int range, ArrayList<Homme> humans,int seed){
+
+
+    public Femme ask(Homme h){
+        Femme evince = h.compare(this);
+        if (evince == null || evince.getId() != this.getId()){
+            this.setBounded(h);
+        }
+        return evince;
+    }
+    @Override
+    protected void generateRandomPrefList(int range, ArrayList<Homme> humans,int seed){
         ArrayList<Homme> pref = new ArrayList<>();
         Random rand = new Random(seed);
         int val;
