@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public abstract class AbstractHuman<T> implements Human{
     protected int id;
     protected T boundedTo;
-    protected ArrayList<T> pref_list;
+    protected ArrayList<T> prefList;
 
     /**  Get id of entity */
     @Override public int getId(){
@@ -22,17 +22,17 @@ public abstract class AbstractHuman<T> implements Human{
 
     /**  Set a list of prefs by giving an array of a specific entity */
     public void setPrefList(ArrayList<T> humans){
-        this.pref_list = humans;
+        this.prefList = humans;
     }
     public T getPrefList(){
-        return this.pref_list.get(0);
+        return this.prefList.get(0);
     }
 
     public ArrayList<T> getList(){
-        return this.pref_list;
+        return this.prefList;
     }
     public void removeFirstPrefList(){
-        this.pref_list.remove(0);
+        this.prefList.remove(0);
     }
 
     /**  Generate randomly set of prefs */

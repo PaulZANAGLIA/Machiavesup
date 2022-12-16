@@ -4,7 +4,7 @@ import java.util.Random;
 public class Homme extends AbstractHuman<Femme> {
     public Homme(int id){
         this.id = id;
-        this.pref_list = new ArrayList<>();
+        this.prefList = new ArrayList<>();
         this.boundedTo = null;
     }
 
@@ -33,7 +33,7 @@ public class Homme extends AbstractHuman<Femme> {
 
     @Override public void printPrefList(){
         System.out.print("[ ");
-        for(Femme f : this.pref_list){
+        for(Femme f : this.prefList){
             System.out.printf("%d, ", f.getId());
         }
         System.out.print("]\n");

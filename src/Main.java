@@ -28,8 +28,8 @@ public class Main {
             f.printPrefList();
         }
 
-        Gale_Shapley(men);
-        System.out.println("Sans tricher " +  is_Stable(women));
+        galeShapley(men);
+        System.out.println("Sans tricher " +  isStable(women));
 
         /* Regarde si l'instabilité est detecté (sur 3 personnes) */
         Femme f = men.get(2).getBounded();
@@ -44,7 +44,7 @@ public class Main {
         f2.set(men.get(0));
         men.get(0).set(f2);
 
-        System.out.println("En trichant " +  is_Stable(women));
+        System.out.println("En trichant " +  isStable(women));
 
         for(int k = 0; k < men.size(); k++){ // Print couples
             Homme m = men.get(k);
@@ -54,7 +54,7 @@ public class Main {
     }
 
     /** Gale_Shapley algo, procédure mariage stable classique */
-    public static void Gale_Shapley(ArrayList<Homme> hommes){
+    public static void galeShapley(ArrayList<Homme> hommes){
         ArrayList<Homme> Q = new ArrayList<>();
         Q.addAll(hommes);
 
@@ -79,7 +79,7 @@ public class Main {
         }
     }
 
-    public static boolean is_Stable(ArrayList<Femme> femmes){ // on passe l'array femme car elle garde intacte la liste des hommes
+    public static boolean isStable(ArrayList<Femme> femmes){ // on passe l'array femme car elle garde intacte la liste des hommes
 
         for(Femme f : femmes){ // Pour chaque femme, vérifier si elle est en situation de jalousie justifiée
             Homme bound = f.getBounded();
@@ -87,7 +87,7 @@ public class Main {
             for(Homme h : f.getList()){ // Pour chaque homme
                 if(h.getId() == bound.getId()) break;
 
-                // S'il préfere la femme courante, regarde s'il y a une situation de jalousie justifée
+                // S'il préfère la femme courante, regarde s'il y a une situation de jalousie justifée
                 if(h.getList().indexOf(f) < h.getList().indexOf(h.getBounded())){
                     h.printPrefList();
                     System.out.println("f " + f.getId() + " courante " +  h.getList().indexOf(f) + "femme " + h.getList().indexOf(h.getBounded()));
