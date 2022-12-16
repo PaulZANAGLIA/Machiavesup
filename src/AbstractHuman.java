@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public abstract class AbstractHuman<T> implements Human{
@@ -24,7 +25,7 @@ public abstract class AbstractHuman<T> implements Human{
     }
 
     /**  Set a list of prefs by giving an array of a specific entity */
-    public void setPrefList(ArrayList<T> humans){
+    public void setPrefList(List<T> humans){
         this.default_pref_list = new ArrayList<>(humans);
         this.pref_list.addAll(default_pref_list);
     }
@@ -33,11 +34,11 @@ public abstract class AbstractHuman<T> implements Human{
         return this.pref_list.get(this.index);
     }
 
-    public ArrayList<T> getPrefList(){
+    public List<T> getPrefList(){
         return this.pref_list;
     }
 
-    public ArrayList<T> getDefaultPrefList(){
+    public List<T> getDefaultPrefList(){
         return this.default_pref_list;
     }
 
@@ -61,7 +62,7 @@ public abstract class AbstractHuman<T> implements Human{
     }
 
     /**  Generate randomly set of prefs */
-    public void generateRandomPrefList(int range, ArrayList<T> humans, int SEED){
+    public void generateRandomPrefList(int range, List<T> humans, int SEED){
         ArrayList<T> pref = new ArrayList<>();
         Random rand = new Random(SEED);
         int val;

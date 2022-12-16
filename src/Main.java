@@ -51,7 +51,7 @@ public class Main {
             assert f_with_cheat != null;
             int cheatedMan = f_with_cheat.getBounded().getId();
 
-            if(getManPosition(f_without_cheat.getDefaultPrefList(), defaultMan) > getManPosition(f_without_cheat.getDefaultPrefList(), cheatedMan)){
+            if(getManPosition((ArrayList<Homme>) f_without_cheat.getDefaultPrefList(), defaultMan) > getManPosition((ArrayList<Homme>) f_without_cheat.getDefaultPrefList(), cheatedMan)){
                 fichier.write(f_without_cheat.getId() + " " + defaultMan + "\n");
                 fichier.write(f_without_cheat.getId() + " " + cheatedMan + "\n");
                 fichier.write("Amelioration sur la seed " + SEED + "\n");
@@ -152,7 +152,7 @@ public class Main {
         Femme cheater = retrieveWoman(celebrations, cheater_id); // Récuperer la femme qui triche
         Homme man = cheater.getBounded(); // L'homme auquel elle est couplée initialement
         int initial_husband_id = man.getId();
-        int initial_husband_pos = getManPosition(cheater.getPrefList(), initial_husband_id);
+        int initial_husband_pos = getManPosition((ArrayList<Homme>) cheater.getPrefList(), initial_husband_id);
 
         do{
             nbIter++;
