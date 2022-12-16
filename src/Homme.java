@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Random;
 
 public class Homme extends AbstractHuman<Femme> {
     public Homme(int id){
@@ -18,20 +16,6 @@ public class Homme extends AbstractHuman<Femme> {
             this.setBounded(f);
         }
         return evince;
-    }
-
-    @Override protected void generateRandomPrefList(int range, ArrayList<Femme> humans, int SEED){
-        ArrayList<Femme> pref = new ArrayList<>();
-        Random rand = new Random(SEED);
-        int val;
-        while(pref.size() < Main.PLAYSET){
-            val = Math.abs(rand.nextInt()) % range;
-            if(!pref.contains(humans.get(val))){
-                pref.add(humans.get(val));
-            }
-        }
-
-        this.setPrefList(pref);
     }
 
     @Override public void printPrefList(){

@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Arrays;
+import java.util.Random;
 
 public abstract class AbstractHuman<T> implements Human{
     protected int id;
@@ -53,10 +51,8 @@ public abstract class AbstractHuman<T> implements Human{
         this.index = 0;
     }
 
-    public T divorce(){
-        T human = this.boundedTo;
+    public void divorce(){
         this.setBounded(null);
-        return human;
     }
 
     public void reset(){
@@ -65,7 +61,18 @@ public abstract class AbstractHuman<T> implements Human{
     }
 
     /**  Generate randomly set of prefs */
-    protected abstract void generateRandomPrefList(int range, ArrayList<T> humans, int SEED);
+    public void generateRandomPrefList(int range, ArrayList<T> humans, int SEED){
+        ArrayList<T> pref = new ArrayList<>();
+        Random rand = new Random(SEED);
+        int val;
+        while(pref.size() < Main.PLAYSET){
+            val = Math.abs(rand.nextInt()) % range;
+            if(!pref.contains(humans.get(val))){
+                pref.add(humans.get(val));
+            }
+        }
+        this.setPrefList(pref);
+    }
 
     /**  Print entity prefs */
     @Override public abstract void printPrefList();

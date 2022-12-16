@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -44,15 +43,15 @@ public class Main {
             cheatedRes = (ArrayList<Femme>) res.get(2);
 
             // Récupérer la tricheuse dans la situation initiale puis de triche
-            f_without_cheat = retrieve_woman(defaultRes, cheater);
-            f_with_cheat = retrieve_woman(cheatedRes, cheater);
+            f_without_cheat = retrieveWoman(defaultRes, cheater);
+            f_with_cheat = retrieveWoman(cheatedRes, cheater);
 
             assert f_without_cheat != null;
             int defaultMan = f_without_cheat.getBounded().getId();
             assert f_with_cheat != null;
             int cheatedMan = f_with_cheat.getBounded().getId();
 
-            if(get_man_position(f_without_cheat.getDefaultPrefList(), defaultMan) > get_man_position(f_without_cheat.getDefaultPrefList(), cheatedMan)){
+            if(getManPosition(f_without_cheat.getDefaultPrefList(), defaultMan) > getManPosition(f_without_cheat.getDefaultPrefList(), cheatedMan)){
                 fichier.write(f_without_cheat.getId() + " " + defaultMan + "\n");
                 fichier.write(f_without_cheat.getId() + " " + cheatedMan + "\n");
                 fichier.write("Amelioration sur la seed " + SEED + "\n");
@@ -107,9 +106,8 @@ public class Main {
         */
     }
 
-
     /** Gale_Shapley algo, procédure mariage stable classique */
-    public static ArrayList<Femme> Gale_Shapley(ArrayList<Homme> hommes){
+    public static ArrayList<Femme> galeShapley(ArrayList<Homme> hommes){
         ArrayList<Femme> celebration = new ArrayList<>();
         LinkedList<Homme> Q = new LinkedList<>(hommes);
 
@@ -132,7 +130,8 @@ public class Main {
 
         return celebration;
     }
-    public static int Gale_Shapley_With_Cheater(ArrayList<Homme> men, ArrayList<Femme> women, ArrayList<Femme> celebrations, boolean random_cheater){
+
+    public static int galeShapleyWithCheater(ArrayList<Homme> men, ArrayList<Femme> women, ArrayList<Femme> celebrations, boolean random_cheater){
         // Reset groups
         for(int k = 0; k < men.size(); k++) {
             men.get(k).reset();
@@ -150,10 +149,10 @@ public class Main {
 
         System.out.println("============ TRICHE ============");
         int nbIter=0;
-        Femme cheater = retrieve_woman(celebrations, cheater_id); // Récuperer la femme qui triche
+        Femme cheater = retrieveWoman(celebrations, cheater_id); // Récuperer la femme qui triche
         Homme man = cheater.getBounded(); // L'homme auquel elle est couplée initialement
         int initial_husband_id = man.getId();
-        int initial_husband_pos = get_man_position(cheater.getPrefList(), initial_husband_id);
+        int initial_husband_pos = getManPosition(cheater.getPrefList(), initial_husband_id);
 
         do{
             nbIter++;
@@ -218,7 +217,7 @@ public class Main {
                 System.out.println("FEMME " + k);
                 f.printPrefList();
             }
-            current_celebrations = Gale_Shapley(men);
+            current_celebrations = galeShapley(men);
         } while(men.get(PLAYSET).getBounded() == women.get(PLAYSET)); // On tourne l'algo tant qu'on peut améliorer la situation de la femme avant un cas de sacrifice
 
         System.out.println("Il y a eu nbIter: " + nbIter);
@@ -236,7 +235,7 @@ public class Main {
     }
 
     /** Regarde si les couples sont stables */
-    public static boolean is_Stable(ArrayList<Femme> femmes){ // on passe l'array femme, car elle garde intacte la liste des hommes
+    public static boolean isStable(ArrayList<Femme> femmes){ // on passe l'array femme, car elle garde intacte la liste des hommes
 
         for(Femme f : femmes){ // Pour chaque femme, vérifier si elle est en situation de jalousie justifiée
             Homme bound = f.getBounded();
@@ -257,7 +256,7 @@ public class Main {
     }
 
     /** Initialisation d'entités femmes et hommes avec génération aléatoire de listes de préférences */
-    public static void Init_Humans(ArrayList<Homme> men, ArrayList<Femme> women, int PLAYSET, int SEED){
+    public static void initHumans(ArrayList<Homme> men, ArrayList<Femme> women, int PLAYSET, int SEED){
         men.clear();
         women.clear();
 
@@ -274,7 +273,7 @@ public class Main {
         }
     }
 
-    /** Application de GS sans triche, puis avec, et on récuperes les mariages dans les 2 situations pour faire de l'analyse */
+    /** Application GS sans triche, puis avec, et on récupères les mariages dans les 2 situations pour faire de l'analyse */
     public static ArrayList<Object> retrieveData(boolean random_cheater){
         ArrayList<Homme> men = new ArrayList<>(); // Empty List of men
         ArrayList<Femme> women = new ArrayList<>(); // Empty List of women
@@ -282,7 +281,7 @@ public class Main {
         /* EXECUTION */
         // Premiere execution, résultat par défaut, pire choix pour les femmes
 
-        Init_Humans(men, women, PLAYSET, SEED);
+        initHumans(men, women, PLAYSET, SEED);
 
         for(int k = 0; k < PLAYSET; k++){ // Print prefs
             Homme m = men.get(k);
@@ -293,8 +292,8 @@ public class Main {
             f.printPrefList();
         }
 
-        ArrayList<Femme> c = Gale_Shapley(men);
-        System.out.println("Mariage par défaut stable ? " + is_Stable(women));
+        ArrayList<Femme> c = galeShapley(men);
+        System.out.println("Mariage par défaut stable ? " + isStable(women));
 
         ArrayList<Femme> celebrations = new ArrayList<>();
         ArrayList<Femme> initial_state = new ArrayList<>();
@@ -314,7 +313,7 @@ public class Main {
 
         /* ===================================================================== */
 
-        int nb_iter = Gale_Shapley_With_Cheater(men, women, celebrations, random_cheater);
+        int nb_iter = galeShapleyWithCheater(men, women, celebrations, random_cheater);
         /* ===================================================================== */
         System.out.print("================================\n");
         System.out.print("RESULTAT SANS TRICHE PUIS TRICHE\n");
@@ -334,7 +333,7 @@ public class Main {
     }
 
     /** Connaitre la position d'un homme par son ID dans une liste */
-    public static int get_man_position(ArrayList<Homme> hommes, int homme){
+    public static int getManPosition(ArrayList<Homme> hommes, int homme){
         int i = 0;
         while(hommes.get(i).getId() != homme){
             i++;
@@ -343,36 +342,12 @@ public class Main {
     }
 
     /** Récupérer un objet Femme par son ID dans une liste */
-    public static Femme retrieve_woman(ArrayList<Femme> femmes, int femme){
+    public static Femme retrieveWoman(ArrayList<Femme> femmes, int femme){
         for (Femme f : femmes) {
             if (f.getId() == femme) {
                 return f;
             }
         }
         return null;
-    }
-
-    public static int women_situation_is_globally_better(ArrayList<Femme> f1, ArrayList<Femme> f2){
-        Femme f_courante_in_f1;
-        Femme f_courante_in_f2;
-        int acc = 0;
-        int defaultRes = 0;
-        for(Femme f : f1){ // Compte le nombre de femmes avec leurs meilleurs choix
-            if(get_man_position(f.getDefaultPrefList(), f.getBounded().getId()) == 0){ // le nombre de femmes avec leurs meilleurs choix
-                defaultRes++;
-            }
-        }
-        for(int i = 0; i< f1.size(); i++){ // Compte le nombre de femmes avec leurs meilleurs choix avec triche
-            f_courante_in_f1 = retrieve_woman(f1, i);
-            f_courante_in_f2 = retrieve_woman(f2, i);
-            assert f_courante_in_f1 != null;
-            assert f_courante_in_f2 != null;
-            if(/*f_courante_in_f1.getBounded().getId() != f_courante_in_f2.getBounded().getId() && */ get_man_position(f_courante_in_f1.getPrefList(), f_courante_in_f2.getBounded().getId()) == 0){
-                acc++;
-            }
-        }
-        System.out.printf("%d default, %d acc\n", defaultRes, acc);
-        if(acc > defaultRes) return 1; // retourne 1, si la situation est meilleure
-        return 0;
     }
 }
