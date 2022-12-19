@@ -1,9 +1,8 @@
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Random;
 
 import static java.lang.Integer.valueOf;
 /*Liste d'attente,
@@ -17,338 +16,346 @@ import static java.lang.Integer.valueOf;
 * Modelisation de l'algo parcoursup
 *
 *  */
+// Seed 1592
 public class Main {
-    final static int PLAYSET =3;
-    public static int init_random(int increment)
-    {
-        return 1+increment;
+    final static int PLAYSET_etudiant = 100;
+    final static int PLAYSET_formation = 20;
+    final static int nbr_choix = 10;
+
+    final static int capacite_max_formation = 5;
+
+
+    public static int init_random(int increment) {
+        return 1 + increment;
     }
+
     public static void main(String[] args) {
         try {
-            int nbr_test_total=100;
-            FileWriter Amelioration = new FileWriter("Amelioration.txt");
-            FileWriter Egalite = new FileWriter("Egalite.txt");
-            FileWriter Deception = new FileWriter("Deception.txt");
-            FileWriter Cas_Reference = new FileWriter("Cas_Reference.txt");
-            long startTime = System.currentTimeMillis();
-            ArrayList<Homme> men = new ArrayList<>(); // Empty List of men
-            ArrayList<Femme> women = new ArrayList<>(); // Empty List of women
-            for (int i = 0; i < PLAYSET; i++) { // Init groups
-                Homme m = new Homme(i);
-                Femme f = new Femme(i);
-                men.add(m);
-                women.add(f);
+            int SEED = 2;
+            FileWriter fichierComparaison = null;
+            FileWriter fichierPreferenceEtudiant = null;
+            fichierComparaison = new FileWriter("Comparaison.txt");
+            fichierPreferenceEtudiant = new FileWriter("PreferenceEtudiant.txt");
+            FileWriter fichierPreferenceFormation = null;
+            fichierPreferenceFormation = new FileWriter("PreferenceFormation.txt");
+            int ameliorationEtudiant0=0;
+            int nbrTest;
+            for (nbrTest = 0; nbrTest < 1; nbrTest++) {
+                SEED++;
+                fichierComparaison.write("Seed : " + SEED + " \n");
+                fichierPreferenceEtudiant.write("Seed : " + SEED + " \n");
+                fichierPreferenceFormation.write("Seed : " + SEED + " \n");
+                Strategie strategieA = new StrategieA();
+                Strategie strategieRefus = new StrategieRefus();
+                ArrayList<Etudiant> ListeEtudiant1 = new ArrayList<>();
+                ArrayList<Formation> ListeFormation1 = new ArrayList<>();
+                for (int i = 0; i < PLAYSET_formation; i++) {
+                    Formation formationi = new Formation(i, capacite_max_formation, 10);
+                    ListeFormation1.add(formationi);
+                }
+                for (int i = 0; i < PLAYSET_etudiant; i++) {
+                    Etudiant etudianti = new Etudiant(i, nbr_choix);
+                    ListeEtudiant1.add(etudianti);
+                }
+                ParcoursupEtudiant(ListeEtudiant1, ListeFormation1, strategieA, strategieA, SEED,fichierPreferenceFormation);
+                for(int n = 0 ; n < PLAYSET_etudiant ; n ++) {
+                    fichierPreferenceEtudiant.write("Etudiant " + n + " : ");
+                    ArrayList<Formation> listePref = new ArrayList<>(ListeEtudiant1.get(n).getListePreference());
+                    for (int m = 0; m < listePref.size(); m++) {
+                        fichierPreferenceEtudiant.write(" "+listePref.get(m).getId() + " ,");
+                    }
+                    fichierPreferenceEtudiant.write("\n");
+                }
+                ArrayList<Etudiant> ListeEtudiant2 = new ArrayList<>();
+                ArrayList<Formation> ListeFormation2 = new ArrayList<>();
+                for (int i = 0; i < PLAYSET_formation; i++) {
+                    Formation formationi = new Formation(i, capacite_max_formation, 10);
+                    ListeFormation2.add(formationi);
+                }
+                for (int i = 0; i < PLAYSET_etudiant; i++) {
+                    Etudiant etudianti = new Etudiant(i, nbr_choix);
+                    ListeEtudiant2.add(etudianti);
+                }
+
+                ParcoursupEtudiant(ListeEtudiant2, ListeFormation2, strategieRefus, strategieA, SEED,fichierPreferenceFormation);
+                for(int n = 0 ; n < PLAYSET_etudiant ; n++)
+                {
+                    ArrayList<Formation> listePref2 = new ArrayList<>(ListeEtudiant2.get(n).getListePreference());
+                    fichierPreferenceEtudiant.write("Etudiant " + n + " : ");
+                    for (int m = 0; m < listePref2.size(); m++) {
+                        fichierPreferenceEtudiant.write(" " + listePref2.get(m).getId() + " ,");
+                    }
+                    fichierPreferenceEtudiant.write("\n");
+                }
+
+                for (int i = 0; i < PLAYSET_etudiant; i++) {
+                    Etudiant etudiant1 = ListeEtudiant1.get(i);
+                    Etudiant etudiant2 = ListeEtudiant2.get(i);
+                    if (etudiant1.getListeAcceptation().size() > 0 && etudiant2.getListeAcceptation().size() > 0) {
+                        fichierComparaison.write("Etudiant : " + i + " Cas defaut : " + etudiant1.getListeAcceptation().get(0).getId() + " Cas Refus : " + etudiant2.getListeAcceptation().get(0).getId() + "\n");
+                        if (etudiant1.getListeAcceptation().get(0).getId() != etudiant2.getListeAcceptation().get(0).getId()) {
+                            ArrayList<Formation> liste1 = new ArrayList<>(etudiant2.getListePreference());
+                            Formation formationEtu1 = etudiant1.getListeAcceptation().get(0);
+                            Formation formationEtu2 = etudiant2.getListeAcceptation().get(0);
+                            for (int x = 0; x < liste1.size(); x++) {
+                                if (liste1.get(x).getId() == formationEtu1.getId()) {
+                                    System.out.println("Cas difference : Echec : Seed :" + SEED + "Etudiant : " + i);
+                                    break;
+                                } else {
+                                    if(i==0)
+                                    {
+                                        System.out.println("Cas difference : Reussite de l'étudiant 0 : Seed :" + SEED + "Etudiant : " + i);
+                                        ameliorationEtudiant0++;
+                                    }
+                                    else {
+                                        System.out.println("Cas difference : Reussite : Seed :" + SEED + "Etudiant : " + i);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
+                    } else if (etudiant1.getListeAcceptation().size() == 0) {
+                        fichierComparaison.write("Etudiant : " + i + " Cas defaut : " + "rien" + " Cas Refus : " + etudiant2.getListeAcceptation().get(0).getId() + "\n");
+                        if(i==0)
+                        {
+                            System.out.println("Cas aucun resultat : Reussite de l'étudiant 0 : Seed :" + SEED + "Etudiant : " + i);
+                            ameliorationEtudiant0++;
+                        }
+                        else {
+                            System.out.println("Cas aucun resultat : Reussite : Seed :" + SEED + "Etudiant : " + i);
+                        }
+
+                    } else if (etudiant2.getListeAcceptation().size() == 0) {
+                        fichierComparaison.write("Etudiant : " + i + " Cas defaut : " + etudiant1.getListeAcceptation().get(0).getId() + " Cas Refus : " + "rien" + "\n");
+                        System.out.println("Cas echec total : Echec : Seed :" + SEED + "Etudiant : " + i);
+                    } else {
+                        fichierComparaison.write("Etudiant : " + i + " Cas defaut : " + "rien" + " Cas Refus : " + "rien" + "\n");
+                    }
+                }
             }
-            Homme OMEGA_H = new Homme(PLAYSET);
-            Femme OMEGA_F = new Femme(PLAYSET);
-            men.add(OMEGA_H);
-            women.add(OMEGA_F);
-            ArrayList<Integer> seed_ameliorable=new ArrayList<>();
-            ArrayList<Integer> femme_ameliorable=new ArrayList<>();
-            for (int change_women = 0; change_women < 1; change_women++) { // Le code est relancé pour les femmes d'indice 0 a 1-1 ( ici uniquement sur femme 0, si change_women < 2, relancer pour femme 0 et 1
-                int indice_avec_triche; // indice de l'union avec triche;
-                int nombre_amelioration = 0; // nombre de fois que la femme s'améliore avec la triche
-                int nombre_deception = 0; // nombre de fois que la femme empire son cas
-                int nombre_egalite = 0; // nombre de fois ou le résultat est identique
-                int nombre_de_permutation = 0; // plutot que de calculer PLAYSET! on incremente juste à chaque permutation, même resultat, pas la même complexité :p
-                int ameliorer_ou_pas;
-                int seed_ameliorer=0;
-                Cas_Reference.write("--F"+change_women+"--\n");
-                Amelioration.write("--F"+change_women+"--\n");
-                Deception.write("--F"+change_women+"--\n");
-                Egalite.write("--F"+change_women+"--\n");
-                for (int nbr_test = 0; nbr_test < nbr_test_total; nbr_test++) { // seed de 0 a nbr_test_total
-                    int PLAYSET=3;
-                    int IsAmeliorable=0;
-                    int SEED = init_random(nbr_test);
-                    for (int k = 0; k < PLAYSET; k++) { // For each woman/man, generate random set of prefs
-                        men.get(k).generateRandomPrefList(PLAYSET, women, SEED + k + PLAYSET);
-                        women.get(k).generateRandomPrefList(PLAYSET, men, SEED + k);
-                    }
-                    //Homme OMEGA_H = new Homme(PLAYSET);
-                    //Femme OMEGA_F = new Femme(PLAYSET);
-                    OMEGA_H.generateRandomPrefList(PLAYSET, women, SEED - 2);
-                    OMEGA_H.getListEff().add(OMEGA_F);
-                    OMEGA_F.generateRandomPrefList(PLAYSET, men, SEED - 1);
-                    OMEGA_F.getListEff().add(OMEGA_H);
-                    for(int k = 0; k < PLAYSET; k++){
-                        Homme m = men.get(k);
-                        m.getListEff().add(OMEGA_F);
-                        m.getList_de_base().add(OMEGA_F);
-                        Femme f = women.get(k);
-                        f.getListEff().add(OMEGA_H);
-                        f.getList_de_base().add(OMEGA_H);
-                    }
-                    PLAYSET=4; // doit être égal à PLAYSET  + Omega , soit +1. Mais ne peux pas être se voir affecter PLAYSET+1 sinon celà serait un incrément
-                    //////////
-                    //// copie de la liste obtenu pour la femme 0 dans un tableau qui va ensuite être permuter
-                    int arr[] = new int[PLAYSET];
-                    ArrayList<Homme> listdhomme = women.get(0).getListEff();
-                    for (int i = 0; i < PLAYSET; i++) {
-                        arr[i] = listdhomme.get(i).getId();
-                    }
-                    Gale_Shapeley(men);  /// gale shapley initial.
-                    // int resultat_sans_triche = women.get(0).getBounded().getId();  /// resultat de la femme 0 sans triche
-                    int indice_resultat_sans_triche = valueOf(women.get(change_women).getAndSetIndidceBoundedTo(PLAYSET)); // indice de ce resultat, plus simple à vérifié, évite un O(n)^2
-                    Cas_Reference.write("--S "+SEED+"--"+"F "+change_women+"\n");
-                    for(int k = 0; k < men.size(); k++){ // Print couples
-                        Homme m = men.get(k);
-                        Cas_Reference.write("H " + m.getId() + " & F" + m.getBounded().getId()+"\n");
-                    }
-                    for(int k = 0;k<women.size();k++)
-                    {
-                        Femme F = women.get(k);
-                        Cas_Reference.write("F "+k+" [ ");
-                        for(Homme h : F.List_eff){
-                            Cas_Reference.write(h.getId()+", ");
-                        }
-                        Cas_Reference.write("]\n");
-                    }
-                    for(int k = 0;k<men.size();k++)
-                    {
-                        Homme H = men.get(k);
-                        Cas_Reference.write("H "+k+" [ ");
-                        for(Femme F : H.List_eff){
-                            Cas_Reference.write(F.getId()+", ");
-                        }
-                        Cas_Reference.write("]\n");
-                    }
-                    /////////////////////////////TRICHE////////////:
-                    //  System.out.println("TRICHE");
-                    for (int i = 0; i < PLAYSET; i++) {
-                        men.get(i).clear();
-                        women.get(i).clear();
-                    }
-                    AllPermutation perm = new AllPermutation(arr);
-                    perm.GetFirst();
-                    ArrayList<Homme> pref = new ArrayList<Homme>();
-                    for (int i = 0; i < PLAYSET; i++) {
-                        pref.add(men.get(arr[i])); // création de la nouvelle liste grace à la permutation
-                    }
-                    women.get(0).setEffPrefList(pref);
-                    Gale_Shapeley(men); // 1ere permutation ( hors boucle )
-                    nombre_de_permutation++;
-                    indice_avec_triche = valueOf(women.get(change_women).getAndSetIndidceBoundedTo(PLAYSET));
-                    ameliorer_ou_pas = women.get(change_women).isItBetter(indice_resultat_sans_triche);
-                    //  System.out.println("Indice avec triche :"+indice_avec_triche+"\nameliorer ou pas :"+ameliorer_ou_pas+"\nSans triche : "+indice_resultat_sans_triche);
-                    switch (ameliorer_ou_pas) {
-                        case 1:
-                            if(IsAmeliorable==0)
-                            {
-                                seed_ameliorer++;
-                                IsAmeliorable=1;
-                                seed_ameliorable.add(SEED);
-                                femme_ameliorable.add(change_women);
-                            }
-                            nombre_amelioration++;
-                            Amelioration.write("--P "+nombre_de_permutation+"\n");
-                            Amelioration.write("--S "+SEED+"--"+"F "+change_women+"\n");
-                            for(int k = 0; k < PLAYSET; k++){ // Print couples
-                                Homme m = men.get(k);
-                                Amelioration.write("H " + m.getId() + " & F " + m.getBounded().getId()+"\n");
-                            }
-                            for(int k = 0;k<PLAYSET;k++)
-                            {
-                                Femme F = women.get(k);
-                                Amelioration.write("F "+k+" [ ");
-                                for(Homme h : F.List_eff){
-                                    Amelioration.write(h.getId()+", ");
-                                }
-                                Amelioration.write("]\n");
-                            }
-                            break;
-                        case 0:
-                            nombre_egalite++;
-                            Egalite.write("--P "+nombre_de_permutation+"\n");
-                            Egalite.write("--S "+SEED+"--"+"F "+change_women+"\n");
-                            for(int k = 0; k < PLAYSET; k++){ // Print couples
-                                Homme m = men.get(k);
-                                Egalite.write("H " + m.getId() + " & F " + m.getBounded().getId()+"\n");
-                            }
-                            for(int k = 0;k<PLAYSET;k++)
-                            {
-                                Femme F = women.get(k);
-                                Egalite.write("F "+k+" [ ");
-                                for(Homme h : F.List_eff){
-                                    Egalite.write(h.getId()+", ");
-                                }
-                                Egalite.write("]\n");
-                            }
-                            break;
-                        case -1:
-                            nombre_deception++;
-                            Deception.write("--P "+nombre_de_permutation+"\n");
-                            Deception.write("--S "+SEED+"--"+"F "+change_women+"\n");
-                            for(int k = 0; k < men.size(); k++){ // Print couples
-                                Homme m = men.get(k);
-                                Deception.write("H " + m.getId() + " & F " + m.getBounded().getId()+"\n");
-                            }
-                            for(int k = 0;k<PLAYSET;k++)
-                            {
-                                Femme F = women.get(k);
-                                Deception.write("F "+k+" [ ");
-                                for(Homme h : F.List_eff){
-                                    Deception.write(h.getId()+", ");
-                                }
-                                Deception.write("]\n");
-                            }
-                    }
-                    for (int i = 0; i < PLAYSET; i++) {
-                        men.get(i).clear();
-                        women.get(i).clear();
-                    }
-                    while (perm.HasNext()) {
-                        pref.clear();
-                        perm.GetNext();
-                        arr = perm.getIndexes();
-                        for (int i = 0; i < PLAYSET; i++) {
-                            pref.add(men.get(arr[i]));
-                        }
-                        women.get(change_women).setEffPrefList(pref);
-                        for (int i = 0; i < PLAYSET; i++) {
-                            men.get(i).clear();
-                            women.get(i).clear();
-                        }
-                        Gale_Shapeley(men);
-                        nombre_de_permutation++;
-                        //indice_avec_triche = valueOf(women.get(change_women).getAndSetIndidceBoundedTo(PLAYSET));
-                        ameliorer_ou_pas = women.get(change_women).isItBetter(indice_resultat_sans_triche);
-                        //  System.out.println("Indice avec triche :"+indice_avec_triche+"\nameliorer ou pas :"+ameliorer_ou_pas+"\nSans triche : "+indice_resultat_sans_triche);
-                        switch (ameliorer_ou_pas) {
-                            case 1:
-                                if(IsAmeliorable==0)
-                                {
-                                    seed_ameliorer++;
-                                    IsAmeliorable=1;
-                                    seed_ameliorable.add(SEED);
-                                    femme_ameliorable.add(change_women);
-                                }
-                                nombre_amelioration++;
-                                Amelioration.write("--P "+nombre_de_permutation+"\n");
-                                Amelioration.write("--S "+SEED+"--"+"F "+change_women+"\n");
-                                for(int k = 0; k < men.size(); k++){ // Print couples
-                                    Homme m = men.get(k);
-                                    Amelioration.write("H " + m.getId() + " & F " + m.getBounded().getId()+"\n");
-                                }
-                                for(int k = 0;k<women.size();k++)
-                                {
-                                    Femme F = women.get(k);
-                                    Amelioration.write("F "+k+" [ ");
-                                    for(Homme h : F.List_eff){
-                                        Amelioration.write(h.getId()+", ");
-                                    }
-                                    Amelioration.write("]\n");
-                                }
-                                break;
-                            case 0:
-                                nombre_egalite++;
-                                Egalite.write("--P "+nombre_de_permutation+"\n");
-                                Egalite.write("--S "+SEED+"--"+"F "+change_women+"\n");
-                                for(int k = 0; k < men.size(); k++){ // Print couples
-                                    Homme m = men.get(k);
-                                    Egalite.write("H " + m.getId() + " & F " + m.getBounded().getId()+"\n");
-                                }
-                                for(int k = 0;k<women.size();k++)
-                                {
-                                    Femme F = women.get(k);
-                                    Egalite.write("F "+k+" [ ");
-                                    for(Homme h : F.List_eff){
-                                        Egalite.write(h.getId()+", ");
-                                    }
-                                    Egalite.write("]\n");
-                                }
-                                break;
-                            case -1:
-                                nombre_deception++;
-                                Deception.write("--P "+nombre_de_permutation+"\n");
-                                Deception.write("--S "+SEED+"--"+"F "+change_women+"\n");
-                                for(int k = 0; k < men.size(); k++){ // Print couples
-                                    Homme m = men.get(k);
-                                    Deception.write("H " + m.getId() + " & F " + m.getBounded().getId()+"\n");
-                                }
-                                for(int k = 0;k<women.size();k++)
-                                {
-                                    Femme F = women.get(k);
-                                    Deception.write("F "+k+" [ ");
-                                    for(Homme h : F.List_eff){
-                                        Deception.write(h.getId()+", ");
-                                    }
-                                    Deception.write("]\n");
-                                }
-                        }
-                        for (int i = 0; i < PLAYSET; i++) {
-                            men.get(i).clear();
-                            women.get(i).clear();
-                        }
-                        OMEGA_F.clear();
-                        OMEGA_H.clear();
-                    }
-                    for (int i = 0; i < PLAYSET; i++) {
-                        men.get(i).clear();
-                        women.get(i).clear();
-                    }
-                    OMEGA_F.clear();
-                    OMEGA_H.clear();
-                }
-                double pourcentage_amelioration;
-                double pourcentage_deception;
-                double pourcentage_egalite;
-                if (nombre_amelioration > 0) {
-                    pourcentage_amelioration = ((double) nombre_amelioration / (double) nombre_de_permutation) * 100.0;
-                } else {
-                    pourcentage_amelioration = 0;
-                }
-                if (nombre_deception > 0) {
-                    pourcentage_deception = ((double) nombre_deception / (double) nombre_de_permutation) * 100.0;
-                } else {
-                    pourcentage_deception = 0;
-                }
-                if (nombre_egalite > 0) {
-                    pourcentage_egalite = ((double) nombre_egalite / (double) nombre_de_permutation) * 100;
-                } else {
-                    pourcentage_egalite = 0;
-                }
-                System.out.println("-----------------Cas " + change_women + "-----------------------------");
-                System.out.println("Amelioration : " + nombre_amelioration + "\nEgalité : " + nombre_egalite + "\nDeception : " + nombre_deception + "\nPermutation : " + nombre_de_permutation);
-                System.out.println("Amelioration : " + pourcentage_amelioration + " %\nEgalité : " + pourcentage_egalite + " %\nDeception : " + pourcentage_deception + " %\nPermutation : " + nombre_de_permutation);
-                System.out.println("Nombre de seed avec une amélioration : "+seed_ameliorer+" "+((double)seed_ameliorer/(double)nbr_test_total)*100+" %");
-            }
-            int seedAmeliorer=seed_ameliorable.size();
-            for(int i = 0;i<seedAmeliorer;i++)
+            fichierComparaison.close();
+            fichierPreferenceFormation.close();
+            fichierPreferenceEtudiant.close();
+            System.out.println("L'etudiant 0 c'est amélioré : "+ameliorationEtudiant0+" fois sur "+nbrTest);
+        } catch (
+                IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static void ParcoursupEtudiant(ArrayList<Etudiant> Etudiant,ArrayList<Formation> Formation,Strategie strategieEtudiant0,Strategie strategieReste,int SEED,FileWriter fichierPreferenceFormation) {
+
+        ArrayList<Etudiant> etudiantStratRefus = new ArrayList<>();
+        etudiantStratRefus.add(Etudiant.get(0));
+        phaseDemande(Etudiant, Formation, SEED);
+
+        phaseTrieInitial(Formation, SEED,fichierPreferenceFormation);
+        affichageListeFormation(Formation);
+
+        for(int nbrSemaine = 0 ; nbrSemaine < 10 ; nbrSemaine++) {
+            phaseTrie(Formation);
+            affichageListeFormation(Formation);
+            premierAppel(Etudiant, Formation);
+            affichageListeEtudiant(Etudiant);
+            applicationStrategie(strategieEtudiant0, etudiantStratRefus);
+            applicationStrategie(strategieReste, new ArrayList<>(Etudiant.subList(1, PLAYSET_etudiant)));
+            phaseRefus(Etudiant);
+        }
+       // affichageListeEtudiant(Etudiant);
+    }
+
+    public static void phaseRefus(ArrayList<Etudiant> Etudiant)
+    {
+        for(int i = 0 ; i < Etudiant.size() ; i++)
+        {
+            ArrayList<Formation> listeRefus = Etudiant.get(i).getListeRefus();
+            for(int j = 0 ; j < listeRefus.size() ; j++)
             {
-               Cas_Reference.write("--------\nFemme ameliorable :"+femme_ameliorable.get(i)+" avec la seed"+seed_ameliorable.get(i)+"\n");
+                listeRefus.get(j).addEtudiantRefus(Etudiant.get(i));
             }
-            Amelioration.close();
-            Deception.close();
-            Egalite.close();
-            Cas_Reference.close();
-            System.out.println("Sur : "+nbr_test_total+" seed "+seedAmeliorer+" sont améliorables, soit "+((double)seedAmeliorer/(double)nbr_test_total)*100+" %");
-            System.out.println("Operation took " + (System.currentTimeMillis() - startTime) + " milliseconds");
-        }catch(IOException e){
-            System.out.println("oopsie");
-            e.printStackTrace();
         }
     }
-    /** Gale_Shapeley algo, procédure mariage stable classique
-     * le mariage devrai être interne à l'algo.*/
-    public static void Gale_Shapeley(ArrayList<Homme> hommes){
-        ArrayList<Homme> Q = new ArrayList<>();
-        Q.addAll(hommes);
-       // System.out.println("Q size = " + Q.size());
-        int count = 0;
-        while (Q.size() > 0){
-            Homme homme = Q.remove(0);
-           // System.out.println("Count " + count + " homme = " + homme.getId());
-            if(homme.getBounded() == null) {
-                Femme pref = homme.getFirstList();
-                Homme evince = homme.ask(pref);
-                if(evince != null){
-             //       System.out.println("homme = " + evince.getId() + " evince");
-                    evince.removeFirstPrefList();
-                    evince.set(null);
-                    Q.add(evince);
+    public static void affichageListeEtudiant(ArrayList<Etudiant> Etudiant)
+    {
+        for(int i = 0 ; i < PLAYSET_etudiant;i++)
+        {
+            System.out.println("-----------------");
+            System.out.println("Etudiant : "+i);
+            System.out.print("Preference [ ");
+            for(int j = 0; j < Etudiant.get(i).getListePreference().size(); j++)
+            {
+                System.out.print(" "+Etudiant.get(i).getListePreference().get(j).getId()+", ");
+            }
+            System.out.println(" ]");
+            System.out.print("Accepte [ ");
+            for(int j = 0; j < Etudiant.get(i).getListeAcceptation().size(); j++)
+            {
+                System.out.print(" "+Etudiant.get(i).getListeAcceptation().get(j).getId()+", ");
+            }
+            System.out.println(" ]");
+            System.out.print("Attente[ ");
+            for(int j = 0; j < Etudiant.get(i).getListeEnAttente().size(); j++)
+            {
+                System.out.print(" "+Etudiant.get(i).getListeEnAttente().get(j).getId()+", ");
+            }
+            System.out.println(" ]");
+            System.out.print("Refus[ ");
+            for(int j = 0; j < Etudiant.get(i).getListeRefus().size(); j++)
+            {
+                System.out.print(" "+Etudiant.get(i).getListeRefus().get(j).getId()+", ");
+            }
+            System.out.println(" ]");
+        }
+        ///affichage///
+    }
+    public static void phaseDemande(ArrayList<Etudiant> Etudiant,ArrayList<Formation> Formation,int SEED) {
+        for (int i = 0; i < PLAYSET_etudiant; i++) {
+            Etudiant.get(i).genererListePreference(Etudiant.get(i).capacite, Formation, SEED + i);
+            for (int j = 0; j < Etudiant.get(i).getListePreference().size(); j++) // renomme demande
+            {
+                Formation.get(Etudiant.get(i).getListePreference().get(j).getId()).add_Etudiant(Etudiant.get(i));
+            }
+        }
+    }
+    public static void phaseTrieInitial(ArrayList<Formation> Formation,int SEED,FileWriter fichierPreferenceFormation) {
+
+        for (int i = 0; i < PLAYSET_formation; i++) {
+            Formation.get(i).generateListePreference(SEED + i);
+            // Formation.get(i).setListeAccepte();
+            //Formation.get(i).setListeAttente();
+            //Formation.get(i).setListeRefus();
+        }
+        try{
+        for(int i = 0 ; i < PLAYSET_formation ; i++)
+        {
+            ArrayList<Etudiant> liste = new ArrayList<>(Formation.get(i).getListePreference());
+            fichierPreferenceFormation.write("Formation "+i+" :");
+            for(int j = 0 ; j < liste.size();j++)
+            {
+                fichierPreferenceFormation.write(" "+liste.get(j).getId()+" ,");
+            }
+            fichierPreferenceFormation.write("\n");
+        }
+        } catch (
+                IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void phaseTrie(ArrayList<Formation> Formation) {
+
+        for (int i = 0; i < PLAYSET_formation; i++) {
+            //Formation.get(i).generateListePreference(SEED + i);
+            Formation.get(i).setListeAccepte();
+            Formation.get(i).setListeAttente();
+            Formation.get(i).setListeRefus();
+        }
+    }
+        public static void affichageListeFormation(ArrayList<Formation> Formation) {
+            for (int i = 0; i < PLAYSET_formation; i++) {
+                System.out.println("Formation : " + i);
+                System.out.print("Ordre de Preference : [ ");
+                for (int j = 0; j < Formation.get(i).getListePreference().size(); j++) {
+                    System.out.print(" " + Formation.get(i).getListePreference().get(j).getId() + ", ");
                 }
-                count++;
+                System.out.println(" ]");
+                System.out.print("Ordre d'acceptation : [ ");
+
+                for (int j = 0; j < Formation.get(i).getListeAcceptation().size(); j++) {
+                    System.out.print(" " + Formation.get(i).getListeAcceptation().get(j).getId() + ", ");
+                }
+                System.out.println(" ]");
+                System.out.print("Ordre d'attente : [ ");
+                for (int j = 0; j < Formation.get(i).getListeAttente().size(); j++) {
+                    System.out.print(" " + Formation.get(i).getListeAttente().get(j).getId() + ", ");
+                }
+                System.out.println(" ]");
+                System.out.print("Ordre de refus : [ ");
+                for (int j = 0; j < Formation.get(i).getListeRefus().size(); j++) {
+                    System.out.print(" " + Formation.get(i).getListeRefus().get(j).getId() + ", ");
+                }
+                System.out.println(" ]");
+                System.out.println("----------------------");
+            }
+        }
+
+
+
+
+
+    /*
+    Parcoursup
+     */
+    public static void premierAppel(ArrayList<Etudiant> Etudiant, ArrayList<Formation> Formation)
+    {
+        for(int i = 0 ; i < PLAYSET_formation; i++)
+        {
+            for(int j = 0; j < Formation.get(i).getListeAcceptation().size(); j++)
+            {
+                Etudiant.get(Formation.get(i).getListeAcceptation().get(j).getId()).add_accepte(Formation.get(i));
+            }
+            for(int j = 0; j < Formation.get(i).getListeAttente().size(); j++)
+            {
+                Etudiant.get(Formation.get(i).getListeAttente().get(j).getId()).add_attente(Formation.get(i),j);
+            }
+            for(int j = 0; j < Formation.get(i).getListeRefus().size(); j++)
+            {
+                Etudiant.get(Formation.get(i).getListeRefus().get(j).getId()).add_refus(Formation.get(i));
+            }
+        }
+    }
+
+    public static void applicationStrategie(Strategie strategie, ArrayList<Etudiant> Etudiant)
+    {
+        //
+        for(int i = 0 ; i < Etudiant.size();i++) // tout les etudiant
+        {
+            ArrayList<Formation> listeAttente = strategie.choixParmiAttente(Etudiant.get(i));
+            //ArrayList<Integer> listePositionAttente = new ArrayList<>(Etudiant.get(i).getListePositionListeAttente());
+            ArrayList<Formation> formationRefuse = new ArrayList<>();
+            for(int k = 0 ; k < Etudiant.get(i).getListeEnAttente().size();k++) {
+                boolean aGarder=false;
+                for (int j = 0; j < listeAttente.size(); j++) {
+                    if( listeAttente.get(j).equals(Etudiant.get(i).getListeEnAttente().get(k)))
+                    {
+                        aGarder=true;
+                        break;
+                    }
+                }
+                if(!aGarder)
+                {
+                   // listePositionAttente.remove(k);
+                    formationRefuse.add(Etudiant.get(i).getListeEnAttente().get(k));
+                }
+            }
+          //  Etudiant.get(i).setListePositionListeAttente(listePositionAttente);
+            Etudiant.get(i).set_List_refus(formationRefuse);
+            Etudiant.get(i).set_List_attente(listeAttente);
+            ///// acceptation
+            Formation formationAccepte = strategie.choixParmiAcceptation(Etudiant.get(i));
+            ArrayList<Formation> formationAcceptation = new ArrayList<>(Etudiant.get(i).getListeAcceptation());
+            if(formationAccepte!=null)
+            {
+                for(int j = 0 ; j < Etudiant.get(i).getListeAcceptation().size(); j++) // toute la liste acceptation d'un étudiant
+                {
+                    if(formationAccepte.getId() != Etudiant.get(i).getListeAcceptation().get(j).getId() )
+                    {
+                        formationRefuse.add(Etudiant.get(i).getListeAcceptation().get(j));
+                        formationAcceptation.remove(Etudiant.get(i).getListeAcceptation().get(j));
+                    }
+                }
+                Etudiant.get(i).set_List_refus(formationRefuse);
+                Etudiant.get(i).set_List_accepte(formationAcceptation);
+            }
+            else
+            {
+                for(int x = 0 ; x < formationAcceptation.size();x++ )
+                {
+                    formationRefuse.add(formationAcceptation.get(x));
+                }
+                Etudiant.get(i).set_List_refus(formationRefuse);
+                Etudiant.get(i).set_List_accepte(new ArrayList<Formation>());
             }
         }
     }
