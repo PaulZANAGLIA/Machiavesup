@@ -67,6 +67,9 @@ public class Etudiant {
     }
     public void add_refus(Formation formation)
     {
+        if (this.listeRefus.contains(formation)) {
+            return;
+        }
         this.listeRefus.add(formation);
     }
     public void add_attente(Formation formation, int position)

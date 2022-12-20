@@ -54,13 +54,17 @@ public class Formation {
     public void addEtudiantRefus(Etudiant e){
         if (listeAcceptation.contains(e))
         {
-            this.listePreference.remove(e);
             this.listeAcceptation.remove(e);
+            if(!this.listeAttente.isEmpty()) {
+                Etudiant etu = this.listeAttente.remove(0);
+                this.listeAcceptation.add(etu);
+                etu.add_accepte(this);
+            }
+
             //this.capacite++;
         }
         else if(listeAttente.contains(e))
         {
-            this.listePreference.remove(e);
             this.listeAttente.remove(e);
             //this.capacite_attente++;
         }

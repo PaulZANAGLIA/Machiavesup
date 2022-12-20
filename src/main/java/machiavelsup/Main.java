@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -127,7 +128,7 @@ public class Main {
         affichageListeFormation(Formation);
 
         for(int nbrSemaine = 0 ; nbrSemaine < 10 ; nbrSemaine++) {
-            phaseTrie(Formation);
+
             affichageListeFormation(Formation);
             premierAppel(Etudiant, Formation);
             affichageListeEtudiant(Etudiant);
@@ -195,9 +196,10 @@ public class Main {
 
         for (int i = 0; i < PLAYSET_formation; i++) {
             Formation.get(i).generateListePreference(SEED + i);
-            // Formation.get(i).setListeAccepte();
-            //Formation.get(i).setListeAttente();
-            //Formation.get(i).setListeRefus();
+
+             Formation.get(i).setListeAccepte();
+            Formation.get(i).setListeAttente();
+            Formation.get(i).setListeRefus();
         }
         try{
         for(int i = 0 ; i < PLAYSET_formation ; i++)
@@ -278,38 +280,37 @@ public class Main {
         }
     }
 
-    public static void applicationStrategie(Strategie strategie, ArrayList<Etudiant> Etudiant)
+    public static void applicationStrategie(Strategie strategie, List<Etudiant> etudiants)
     {
         //
-        for(int i = 0 ; i < Etudiant.size();i++) // tout les etudiant
+        for(Etudiant e : etudiants) // tout les etudiant
         {
-            ArrayList<Formation> listeAttente = strategie.choixParmiAttente(Etudiant.get(i));
-            ArrayList<Formation> formationRefuse = new ArrayList<>(Etudiant.get(i).getListeRefus());
-            ArrayList<Formation> listeAttenteAvantStrat = new ArrayList<>(Etudiant.get(i).getListeEnAttente());
-            for(int k = 0 ; k < listeAttente.size();k++) {
-                listeAttenteAvantStrat.remove(listeAttente.get(k));
-            }
+            ArrayList<Formation> choixAttente = strategie.choixParmiAttente(e);
+            ArrayList<Formation> formationRefuse = new ArrayList<>(e.getListeRefus());
+            ArrayList<Formation> listeAttenteAvantStrat = new ArrayList<>(e.getListeEnAttente());
+
           //  Etudiant.get(i).setListePositionListeAttente(listePositionAttente);
+            listeAttenteAvantStrat.removeAll(choixAttente);
             formationRefuse.addAll(listeAttenteAvantStrat);
-            Etudiant.get(i).set_List_refus(formationRefuse);
-            Etudiant.get(i).set_List_attente(listeAttente);
+            e.set_List_refus(formationRefuse);
+            e.set_List_attente(choixAttente);
             ///// acceptation
-            Formation formationAccepte = strategie.choixParmiAcceptation(Etudiant.get(i));
-            ArrayList<Formation> formatioAccepteAvantStrat = new ArrayList<>(Etudiant.get(i).getListeAcceptation());
+            Formation formationAccepte = strategie.choixParmiAcceptation(e);
+            ArrayList<Formation> formatioAccepteAvantStrat = new ArrayList<>(e.getListeAcceptation());
             if(formationAccepte!=null)
             {
                 formatioAccepteAvantStrat.remove(formationAccepte);
                 formationRefuse.addAll(formatioAccepteAvantStrat);
-                Etudiant.get(i).set_List_refus(formationRefuse);
+                e.set_List_refus(formationRefuse);
                 ArrayList<Formation> retour = new ArrayList<>();
                 retour.add(formationAccepte);
-                Etudiant.get(i).set_List_accepte(retour);
+                e.set_List_accepte(retour);
             }
             else
             {
                 formationRefuse.addAll(formatioAccepteAvantStrat);
-                Etudiant.get(i).set_List_refus(formationRefuse);
-                Etudiant.get(i).set_List_accepte(new ArrayList<Formation>());
+                e.set_List_refus(formationRefuse);
+                e.set_List_accepte(new ArrayList<Formation>());
             }
         }
     }
