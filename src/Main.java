@@ -1,11 +1,13 @@
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     static Random r = new Random();
-    final static int PLAYSET = 4;
+    final static int PLAYSET = 3;
     static int SEED = 1;//Math.abs(r.nextInt());
 
     public static void main(String[] args) throws Exception {
@@ -43,15 +45,15 @@ public class Main {
             cheatedRes = (ArrayList<Femme>) res.get(2);
 
             // Récupérer la tricheuse dans la situation initiale puis de triche
-            f_without_cheat = retrieveWoman(defaultRes, cheater);
-            f_with_cheat = retrieveWoman(cheatedRes, cheater);
+            f_without_cheat = (Femme) retrieveHuman(defaultRes, cheater);
+            f_with_cheat = (Femme) retrieveHuman(cheatedRes, cheater);
 
             assert f_without_cheat != null;
             int defaultMan = f_without_cheat.getBounded().getId();
             assert f_with_cheat != null;
             int cheatedMan = f_with_cheat.getBounded().getId();
 
-            if(getManPosition((ArrayList<Homme>) f_without_cheat.getDefaultPrefList(), defaultMan) > getManPosition((ArrayList<Homme>) f_without_cheat.getDefaultPrefList(), cheatedMan)){
+            if(getPosition((ArrayList<Homme>) f_without_cheat.getDefaultPrefList(), defaultMan) > getPosition((ArrayList<Homme>) f_without_cheat.getDefaultPrefList(), cheatedMan)){
                 fichier.write(f_without_cheat.getId() + " " + defaultMan + "\n");
                 fichier.write(f_without_cheat.getId() + " " + cheatedMan + "\n");
                 fichier.write("Amelioration sur la seed " + SEED + "\n");
@@ -106,6 +108,102 @@ public class Main {
         */
     }
 
+    /** Regarde si les couples sont stables */
+    public static boolean isStable(List<Femme> femmes, List<Homme> hommes){ // on passe l'array femme, car elle garde intacte la liste des hommes
+        for(Femme f: femmes){ // Pour chaque femme, vérifier si elle est en situation de jalousie justifiée
+            Homme bounded = f.getBounded();
+
+            for(Homme h : hommes){ // Pour chaque homme
+                if(h.getId() == bounded.getId()) break;
+
+                // S'il préfère la femme courante, regarde s'il y a une situation de jalousie justifiée
+                if(h.getPrefList().indexOf(f) < h.getPrefList().indexOf(h.getBounded())){
+                    h.printPrefList();
+                    System.out.println("f " + f.getId() + " courante " +  h.getPrefList().indexOf(f) + "femme " + h.getPrefList().indexOf(h.getBounded()));
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /** Connaitre la position d'un homme ou d'une femme par son ID dans une liste */
+    public static int getPosition(List<? extends Human> humans, int humanId){
+        int i = 0;
+        while(humans.get(i).getId() != humanId)
+            i++;
+        return i;
+    }
+
+    /** Récupérer un objet (Femme ou Homme) par son ID dans une liste */
+    public static Human retrieveHuman(List<? extends Human> humans, int x){
+        for(Human h : humans) {
+            if (h.getId() == x)
+                return h;
+        }
+        return null;
+    }
+
+    /** Generate a human with an id */
+    public static Human generateHuman(String genre, int id){
+        if(genre == "man")
+            return new Homme(id);
+        return new Femme(id);
+    }
+
+    /** Generate amount of humans in a list */
+    public static void generateHumans(List<? extends Human> humans, String genre, int range){
+        for(int i = 0; i < range; i++){ // Init groups
+            Human hu = generateHuman(genre, i);
+            if(genre == "man"){
+                Homme h = (Homme) hu;
+                List<Homme> men = (List<Homme>) humans;
+                men.add(h);
+            } else {
+                Femme f = (Femme) hu;
+                List<Femme> women = (List<Femme>) humans;
+                women.add(f);
+            }
+        }
+    }
+
+    /** Generate random PrefList for each  */
+    public static void generateRandomPrefList(List<? extends Human> humans, List<? extends Human> humans2, int PLAYSET, int SEED){
+        // Throw exception if any of the lists are empty
+        assert(!(humans.size() > 0 && humans2.size() > 0));
+
+        // Throw exception if humans and humans2 lists are in the same type
+        assert(!(humans.get(0) instanceof Homme && humans2.get(0) instanceof Homme || humans.get(0) instanceof Femme && humans2.get(0) instanceof Femme));
+
+        final AtomicInteger step = new AtomicInteger((humans2.get(0) instanceof Femme) ? SEED + PLAYSET : SEED);
+
+
+        humans.forEach((human) -> human.generateRandomPrefList(PLAYSET, humans2, step.getAndIncrement()));
+    }
+
+    /** Initialisation d'entités femmes et hommes avec génération aléatoire de listes de préférences */
+    public static void initHumans(List<Homme> men, List<Femme> women, int PLAYSET, int SEED){
+        men.clear();
+        women.clear();
+
+        // Init groups
+        generateHumans(men, "man", PLAYSET);
+        generateHumans(women, "woman", PLAYSET);
+
+        // For each woman/man, generate random set of prefs
+        generateRandomPrefList(men, women, PLAYSET, SEED);
+        generateRandomPrefList(women, men, PLAYSET, SEED);
+
+        /*
+        for(int k = 0; k < PLAYSET; k++){
+            men.get(k).generateRandomPrefList(PLAYSET, women, SEED + k + PLAYSET);
+            women.get(k).generateRandomPrefList(PLAYSET, men, SEED + k);
+        }
+        */
+    }
+
+
+
     /** Gale_Shapley algo, procédure mariage stable classique */
     public static ArrayList<Femme> galeShapley(ArrayList<Homme> hommes){
         ArrayList<Femme> celebration = new ArrayList<>();
@@ -130,7 +228,6 @@ public class Main {
 
         return celebration;
     }
-
     public static int galeShapleyWithCheater(ArrayList<Homme> men, ArrayList<Femme> women, ArrayList<Femme> celebrations, boolean random_cheater){
         // Reset groups
         for(int k = 0; k < men.size(); k++) {
@@ -149,10 +246,10 @@ public class Main {
 
         System.out.println("============ TRICHE ============");
         int nbIter=0;
-        Femme cheater = retrieveWoman(celebrations, cheater_id); // Récuperer la femme qui triche
+        Femme cheater = (Femme) retrieveHuman(celebrations, cheater_id); // Récuperer la femme qui triche
         Homme man = cheater.getBounded(); // L'homme auquel elle est couplée initialement
         int initial_husband_id = man.getId();
-        int initial_husband_pos = getManPosition((ArrayList<Homme>) cheater.getPrefList(), initial_husband_id);
+        int initial_husband_pos = getPosition((ArrayList<Homme>) cheater.getPrefList(), initial_husband_id);
 
         do{
             nbIter++;
@@ -234,45 +331,6 @@ public class Main {
         return nbIter;
     }
 
-    /** Regarde si les couples sont stables */
-    public static boolean isStable(ArrayList<Femme> femmes){ // on passe l'array femme, car elle garde intacte la liste des hommes
-
-        for(Femme f : femmes){ // Pour chaque femme, vérifier si elle est en situation de jalousie justifiée
-            Homme bound = f.getBounded();
-
-            for(Homme h : f.getPrefList()){ // Pour chaque homme
-                if(h.getId() == bound.getId()) break;
-
-                // S'il préfère la femme courante, regarde s'il y a une situation de jalousie justifiée
-                if(h.getPrefList().indexOf(f) < h.getPrefList().indexOf(h.getBounded())){
-                    h.printPrefList();
-                    System.out.println("f " + f.getId() + " courante " +  h.getPrefList().indexOf(f) + "femme " + h.getPrefList().indexOf(h.getBounded()));
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /** Initialisation d'entités femmes et hommes avec génération aléatoire de listes de préférences */
-    public static void initHumans(ArrayList<Homme> men, ArrayList<Femme> women, int PLAYSET, int SEED){
-        men.clear();
-        women.clear();
-
-        for(int i = 0; i < PLAYSET; i++){ // Init groups
-            Homme m = new Homme(i);
-            Femme f = new Femme(i);
-            men.add(m);
-            women.add(f);
-        }
-
-        for(int k = 0; k < PLAYSET; k++){ // For each woman/man, generate random set of prefs
-            men.get(k).generateRandomPrefList(PLAYSET, women, SEED + k + PLAYSET);
-            women.get(k).generateRandomPrefList(PLAYSET, men, SEED + k);
-        }
-    }
-
     /** Application GS sans triche, puis avec, et on récupères les mariages dans les 2 situations pour faire de l'analyse */
     public static ArrayList<Object> retrieveData(boolean random_cheater){
         ArrayList<Homme> men = new ArrayList<>(); // Empty List of men
@@ -293,7 +351,7 @@ public class Main {
         }
 
         ArrayList<Femme> c = galeShapley(men);
-        System.out.println("Mariage par défaut stable ? " + isStable(women));
+        System.out.println("Mariage par défaut stable ? " + isStable(women, men));
 
         ArrayList<Femme> celebrations = new ArrayList<>();
         ArrayList<Femme> initial_state = new ArrayList<>();
@@ -330,24 +388,5 @@ public class Main {
         res.add(initial_state);
         res.add(celebrations);
         return res;
-    }
-
-    /** Connaitre la position d'un homme par son ID dans une liste */
-    public static int getManPosition(ArrayList<Homme> hommes, int homme){
-        int i = 0;
-        while(hommes.get(i).getId() != homme){
-            i++;
-        }
-        return i;
-    }
-
-    /** Récupérer un objet Femme par son ID dans une liste */
-    public static Femme retrieveWoman(ArrayList<Femme> femmes, int femme){
-        for (Femme f : femmes) {
-            if (f.getId() == femme) {
-                return f;
-            }
-        }
-        return null;
     }
 }

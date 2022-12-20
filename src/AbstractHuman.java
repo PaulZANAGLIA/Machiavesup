@@ -15,66 +15,67 @@ public abstract class AbstractHuman<T> implements Human{
     }
 
     /**  Get the entity partner */
-    public T getBounded(){
+    @Override public T getBounded(){
         return this.boundedTo;
     }
 
     /**  Set entity partner */
-    protected void setBounded(T t){
-        this.boundedTo = t;
+    @Override public void setBounded(Human t){
+        this.boundedTo = (T) t;
     }
 
     /**  Set a list of prefs by giving an array of a specific entity */
-    public void setPrefList(List<T> humans){
+    @Override public void setPrefList(List humans){
         this.default_pref_list = new ArrayList<>(humans);
         this.pref_list.addAll(default_pref_list);
     }
 
-    public T getCurrentPref(){
+    @Override public T getCurrentPref(){
         return this.pref_list.get(this.index);
     }
 
-    public List<T> getPrefList(){
+    @Override public List<T> getPrefList(){
         return this.pref_list;
     }
 
-    public List<T> getDefaultPrefList(){
+    @Override public List<T> getDefaultPrefList(){
         return this.default_pref_list;
     }
 
     /** Shift to the right the index on pref list */
-    public void shiftPrefList(){
+    @Override public void shiftPrefList(){
         if(this.index < this.default_pref_list.size())
             this.index ++;
     }
 
-    public void resetIndex(){
+    @Override public void resetIndex(){
         this.index = 0;
     }
 
-    public void divorce(){
+    @Override public void divorce(){
         this.setBounded(null);
     }
 
-    public void reset(){
+    @Override public void reset(){
         this.resetIndex();
         this.divorce();
     }
 
     /**  Generate randomly set of prefs */
-    public void generateRandomPrefList(int range, List<T> humans, int SEED){
+    @Override public void generateRandomPrefList(int range, List humans, int SEED){
+        System.out.println("VOICI LA SEED STEP" + SEED);
         ArrayList<T> pref = new ArrayList<>();
         Random rand = new Random(SEED);
         int val;
         while(pref.size() < Main.PLAYSET){
             val = Math.abs(rand.nextInt()) % range;
             if(!pref.contains(humans.get(val))){
-                pref.add(humans.get(val));
+                pref.add((T) humans.get(val));
             }
         }
         this.setPrefList(pref);
     }
 
     /**  Print entity prefs */
-    @Override public abstract void printPrefList();
+    public abstract void printPrefList();
 }
