@@ -71,7 +71,11 @@ public class Etudiant {
     }
     public void add_attente(Formation formation, int position)
     {
-        this.listePositionListeAttente.add(position);
+        if(this.listeEnAttente.contains(formation))
+        {
+            return;
+        }
+        //this.listePositionListeAttente.add(position);
         this.listeEnAttente.add(formation);
     }
 

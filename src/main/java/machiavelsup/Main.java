@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.valueOf;
 /*Liste d'attente,
@@ -89,52 +91,20 @@ public class Main {
                     }
                     fichierPreferenceEtudiant.write("\n");
                 }
+                for(int numeroEtudiant = 0; numeroEtudiant < PLAYSET_etudiant ; numeroEtudiant++)
+                {
+                    Etudiant etuA = ListeEtudiant1.get(numeroEtudiant);
+                    Etudiant etuRefus = ListeEtudiant2.get(numeroEtudiant);
 
-                for (int i = 0; i < PLAYSET_etudiant; i++) {
-                    Etudiant etudiant1 = ListeEtudiant1.get(i);
-                    Etudiant etudiant2 = ListeEtudiant2.get(i);
-                    if (etudiant1.getListeAcceptation().size() > 0 && etudiant2.getListeAcceptation().size() > 0) {
-                        fichierComparaison.write("Etudiant : " + i + " Cas defaut : " + etudiant1.getListeAcceptation().get(0).getId() + " Cas Refus : " + etudiant2.getListeAcceptation().get(0).getId() + "\n");
-                        if (etudiant1.getListeAcceptation().get(0).getId() != etudiant2.getListeAcceptation().get(0).getId()) {
-                            ArrayList<Formation> liste1 = new ArrayList<>(etudiant2.getListePreference());
-                            Formation formationEtu1 = etudiant1.getListeAcceptation().get(0);
-                            Formation formationEtu2 = etudiant2.getListeAcceptation().get(0);
-                            for (int x = 0; x < liste1.size(); x++) {
-                                if (liste1.get(x).getId() == formationEtu1.getId()) {
-                                    System.out.println("Cas difference : Echec : Seed :" + SEED + "Etudiant : " + i);
-                                    break;
-                                } else {
-                                    if(i==0)
-                                    {
-                                        System.out.println("Cas difference : Reussite de l'étudiant 0 : Seed :" + SEED + "Etudiant : " + i);
-                                        ameliorationEtudiant0++;
-                                    }
-                                    else {
-                                        System.out.println("Cas difference : Reussite : Seed :" + SEED + "Etudiant : " + i);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
+                    ArrayList<Formation> etuAaccepte = etuA.getListeAcceptation();
+                    ArrayList<Formation> etuRefusAccepte = etuRefus.getListeAcceptation();
 
-                    } else if (etudiant1.getListeAcceptation().size() == 0) {
-                        fichierComparaison.write("Etudiant : " + i + " Cas defaut : " + "rien" + " Cas Refus : " + etudiant2.getListeAcceptation().get(0).getId() + "\n");
-                        if(i==0)
-                        {
-                            System.out.println("Cas aucun resultat : Reussite de l'étudiant 0 : Seed :" + SEED + "Etudiant : " + i);
-                            ameliorationEtudiant0++;
-                        }
-                        else {
-                            System.out.println("Cas aucun resultat : Reussite : Seed :" + SEED + "Etudiant : " + i);
-                        }
 
-                    } else if (etudiant2.getListeAcceptation().size() == 0) {
-                        fichierComparaison.write("Etudiant : " + i + " Cas defaut : " + etudiant1.getListeAcceptation().get(0).getId() + " Cas Refus : " + "rien" + "\n");
-                        System.out.println("Cas echec total : Echec : Seed :" + SEED + "Etudiant : " + i);
-                    } else {
-                        fichierComparaison.write("Etudiant : " + i + " Cas defaut : " + "rien" + " Cas Refus : " + "rien" + "\n");
-                    }
+
+
+                    
                 }
+
             }
             fichierComparaison.close();
             fichierPreferenceFormation.close();
@@ -314,48 +284,30 @@ public class Main {
         for(int i = 0 ; i < Etudiant.size();i++) // tout les etudiant
         {
             ArrayList<Formation> listeAttente = strategie.choixParmiAttente(Etudiant.get(i));
-            //ArrayList<Integer> listePositionAttente = new ArrayList<>(Etudiant.get(i).getListePositionListeAttente());
-            ArrayList<Formation> formationRefuse = new ArrayList<>();
-            for(int k = 0 ; k < Etudiant.get(i).getListeEnAttente().size();k++) {
-                boolean aGarder=false;
-                for (int j = 0; j < listeAttente.size(); j++) {
-                    if( listeAttente.get(j).equals(Etudiant.get(i).getListeEnAttente().get(k)))
-                    {
-                        aGarder=true;
-                        break;
-                    }
-                }
-                if(!aGarder)
-                {
-                   // listePositionAttente.remove(k);
-                    formationRefuse.add(Etudiant.get(i).getListeEnAttente().get(k));
-                }
+            ArrayList<Formation> formationRefuse = new ArrayList<>(Etudiant.get(i).getListeRefus());
+            ArrayList<Formation> listeAttenteAvantStrat = new ArrayList<>(Etudiant.get(i).getListeEnAttente());
+            for(int k = 0 ; k < listeAttente.size();k++) {
+                listeAttenteAvantStrat.remove(listeAttente.get(k));
             }
           //  Etudiant.get(i).setListePositionListeAttente(listePositionAttente);
+            formationRefuse.addAll(listeAttenteAvantStrat);
             Etudiant.get(i).set_List_refus(formationRefuse);
             Etudiant.get(i).set_List_attente(listeAttente);
             ///// acceptation
             Formation formationAccepte = strategie.choixParmiAcceptation(Etudiant.get(i));
-            ArrayList<Formation> formationAcceptation = new ArrayList<>(Etudiant.get(i).getListeAcceptation());
+            ArrayList<Formation> formatioAccepteAvantStrat = new ArrayList<>(Etudiant.get(i).getListeAcceptation());
             if(formationAccepte!=null)
             {
-                for(int j = 0 ; j < Etudiant.get(i).getListeAcceptation().size(); j++) // toute la liste acceptation d'un étudiant
-                {
-                    if(formationAccepte.getId() != Etudiant.get(i).getListeAcceptation().get(j).getId() )
-                    {
-                        formationRefuse.add(Etudiant.get(i).getListeAcceptation().get(j));
-                        formationAcceptation.remove(Etudiant.get(i).getListeAcceptation().get(j));
-                    }
-                }
+                formatioAccepteAvantStrat.remove(formationAccepte);
+                formationRefuse.addAll(formatioAccepteAvantStrat);
                 Etudiant.get(i).set_List_refus(formationRefuse);
-                Etudiant.get(i).set_List_accepte(formationAcceptation);
+                ArrayList<Formation> retour = new ArrayList<>();
+                retour.add(formationAccepte);
+                Etudiant.get(i).set_List_accepte(retour);
             }
             else
             {
-                for(int x = 0 ; x < formationAcceptation.size();x++ )
-                {
-                    formationRefuse.add(formationAcceptation.get(x));
-                }
+                formationRefuse.addAll(formatioAccepteAvantStrat);
                 Etudiant.get(i).set_List_refus(formationRefuse);
                 Etudiant.get(i).set_List_accepte(new ArrayList<Formation>());
             }

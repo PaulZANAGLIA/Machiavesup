@@ -1,40 +1,59 @@
 package main.java.machiavelsup;
 
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StrategieA implements Strategie {
 
-    @Override
-    public Formation choixParmiAcceptation(Etudiant etudiant) {
 
-        ArrayList<Formation> listeAcceptation =new ArrayList<>(etudiant.getListeAcceptation());
-        ArrayList<Formation> listePreference=new ArrayList<>(etudiant.getListePreference());
-        if(listeAcceptation.size()==0)
+    /*
+public Formation choixParmiAcceptation(Etudiant etudiant)
+    {
+        int[] tab = {};
+        ArrayList<Formation> listeAccepte = new ArrayList<>(etudiant.getListeAcceptation());
+        ArrayList<Formation> listePreference = new ArrayList<>(etudiant.getListePreference());
+        for(int i = 0 ; i < listeAccepte.size(); i ++)
+        {
+            tab[i] = listePreference.indexOf(listeAccepte.get(i));
+        }
+        return listePreference.get(Arrays.stream(tab).min().getAsInt());
+    }*/
+    @Override
+    public Formation choixParmiAcceptation(Etudiant etudiant)
+    {
+        if(etudiant.getListeAcceptation().size()==0)
         {
             return null;
         }
-        Formation formationMax= listeAcceptation.get(0);
-        for(int i = 1 ; i < listeAcceptation.size();i++)
+        Function<Formation, Integer> indexPref = (formation -> etudiant.getListePreference().indexOf(formation));
+        Stream<Integer> listIndexPref = etudiant.getListeAcceptation().stream().map(indexPref);
+        int minIndex = listIndexPref.min(Integer::compare).get();
+        return etudiant.getListePreference().get(minIndex);
+    }
+    @Override
+    public ArrayList<Formation> choixParmiAttente(Etudiant etudiant)
+    {
+        if(etudiant.getListeEnAttente().size()==0)
         {
-            Formation formation = listeAcceptation.get(i);
-            for(int j  = 0 ; i < listePreference.size();j++)
-            {
-                Formation formationtmp = listePreference.get(j);
-                if(formationtmp.getId()==formation.getId())
-                {
-                    formationMax=formationtmp;
-                    break;
-                } else if (formationtmp.getId()==formationMax.getId()) {
-                    break;
-                }
-            }
+            ArrayList<Formation> retourNull = new ArrayList<>();
+            return retourNull;
         }
-        return formationMax;
+        Formation formationAccepte = this.choixParmiAcceptation(etudiant);
+        if(formationAccepte == null)
+        {
+            return etudiant.getListeEnAttente(); // si je suis accepter nulle part, je garde tout
+        }
+
+        int indiceMeilleurFormationActuel = etudiant.getListePreference().indexOf(formationAccepte);
+        return new ArrayList<>(etudiant.getListeEnAttente().stream().filter(c-> etudiant.getListePreference().indexOf(c) < indiceMeilleurFormationActuel).collect(Collectors.toList()));
     }
 
-    @Override
-    public ArrayList<Formation> choixParmiAttente(Etudiant etudiant) {
+    /*public ArrayList<Formation> choixParmiAttente(Etudiant etudiant) {
         ArrayList<Formation> listeAttente = new ArrayList<>(etudiant.getListeEnAttente());
         ArrayList<Formation> listePreference = new ArrayList<>(etudiant.getListePreference());
         ArrayList<Formation> listeAGarder = new ArrayList<>();
@@ -70,7 +89,7 @@ public class StrategieA implements Strategie {
         }
 
         return listeAGarder;
-    }
+    }*/
 }
 //[ 5,  16,  15,  6,  8,  9,  3,  19,  0,  18, ]    preference
 // [  8,  15,  ]                                    attente
