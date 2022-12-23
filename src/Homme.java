@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Homme extends AbstractHuman<Femme> {
+public class Homme extends Human<Femme> {
     public Homme(int id){
         this.id = id;
         this.pref_list = new ArrayList<>();
@@ -9,20 +9,20 @@ public class Homme extends AbstractHuman<Femme> {
         this.index = 0;
     }
 
-    /**  Man ask his better pref of woman, if she accepts, they are bounded, else nothing happen  */
-    public Homme ask(Femme f){
-        Homme evince = f.compare(this);
-        if (evince == null || evince.getId() != this.getId()){
-            this.setBounded(f);
+    public Femme compare(Femme w){
+        if(this.getBounded() == null || this.pref_list.indexOf(w) < this.pref_list.indexOf(this.getBounded())){
+            Femme evince = this.getBounded();
+            this.setBounded(w);
+            return evince;
         }
-        return evince;
+        return w;
     }
 
-    @Override public void printPrefList(){
-        System.out.print("[ ");
-        for(Femme f : this.pref_list){
-            System.out.printf("%d, ", f.getId());
+    public Homme ask(Femme w){
+        Homme evince = w.compare(this);
+        if (evince == null || evince.getId() != this.getId()){
+            this.setBounded(w);
         }
-        System.out.print("]\n");
+        return evince;
     }
 }
