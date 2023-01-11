@@ -1,28 +1,31 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Main {
 
-    final static int PLAYSET = 4;
+    final static int PLAYSET = 7;
 
-    //static Random r = new Random();
+    static int amelioration = 0;
+    static int deception = 0;
+    static int egalite = 0;
 
     public static void main(String[] args) throws Exception{
 
         FileWriter mariagesStables = new FileWriter("Mariages-Stables");
         FileWriter galeShapley = new FileWriter("Gale-Shapley");
 
-        for(int j=1;j<2;j++){
-            mariagesStables.write("\n--- Seed "+j+" ---\n");
+        for(int j=0;j<40000;j++){
             /**     Creation de la liste d'Hommmes et la liste de Femmes, initialement vides    */
             ArrayList<Homme> men = new ArrayList<>(); // Empty List of men
             ArrayList<Femme> women = new ArrayList<>(); // Empty List of women
 
-            int seed = j+1;
-            mariagesStables.write("\n---- Seed num " + seed +"-----\n");
+            int seed = j;
+            //System.out.println("**************** SEED "+seed+" ************");
+            //mariagesStables.write("\n---- Seed numéro " + seed +" -----\n");
 
             /**     Initialiser la liste d'Hommes et de Femmes */
             for (int i = 0; i < PLAYSET; i++) { // Init groups
@@ -35,47 +38,95 @@ public class Main {
             /** Generation aleatoire des listes de preferences */
             for (int k = 0; k < PLAYSET; k++) { // For each woman/man, generate random set of prefs
                 men.get(k).generateRandomPrefList(PLAYSET, women, seed + k + PLAYSET);
-                //seed++;
                 women.get(k).generateRandomPrefList(PLAYSET, men, seed + k);
-                //seed++;
             }
 
-            //allPermutations(women, women.size());
             /** Affichage des listes de preferences pour chaque Human */
-            for(int k = 0; k < PLAYSET; k++){ // Print prefs
+            //affichage_Listes_Pref(men,women);
+
+            /** Gale Shapley */
+            //System.out.println("------ GALE SHAPLEY ------");
+            GaleShapley algorithme = new GaleShapley();
+            algorithme.Gale_Shapley(men);
+
+            Homme mariGaleShapley[] = new Homme[PLAYSET];
+            for(int i =0; i< mariGaleShapley.length;i++){
+                mariGaleShapley[women.get(i).getId()] = women.get(i).getBounded();
+                //System.out.println("Pour Femme "+i+" son mari est "+mariGaleShapley[i].getId());
+            }
+            // Nettoyage
+            nettoyer(men,women);
+
+
+            /** Mariages Stables */
+            //System.out.println("-------  MARIAGES STABLES  -------");
+            MariagesStables mariagesStables1 = new MariagesStables();
+            mariagesStables1.allMariagesStables(men,women,men.size());
+
+
+            // Nettoyage
+            nettoyer(men,women);
+
+            /** Gale Shapley inversé */
+            //System.out.println("-------  GALE SHAP INV  -------");
+            algorithme.Gale_Shapley_inverse(women); //Femmes qui proposent
+
+            Homme mariGaleShapleyInverse[] = new Homme[PLAYSET];
+            for(int i =0; i< mariGaleShapleyInverse.length;i++){
+                mariGaleShapleyInverse[women.get(i).getId()] = women.get(i).getBounded();
+                //System.out.println("Pour Femme "+i+" son mari est "+mariGaleShapleyInverse[i].getId());
+            }
+
+            for(int i=0 ; i<PLAYSET;i++){
+                Femme f = women.get(i);
+                //System.out.println("femme.get "+f.getId());
+                if(f.getPrefList().indexOf(mariGaleShapleyInverse[f.getId()])<f.getPrefList().indexOf(mariGaleShapley[f.getId()])){
+                    //System.out.println("Amelioration pour femme "+f.getId());
+                    amelioration++;
+                } else if(f.getPrefList().indexOf(mariGaleShapleyInverse[f.getId()])==f.getPrefList().indexOf(mariGaleShapley[f.getId()])){
+                    //System.out.println("Egalite pour femme "+f.getId());
+                    egalite++;
+                }
+                else {
+                    //System.out.println("Deception pour femme "+f.getId());
+                    deception++;
+                }
+
+            }
+
+
+            nettoyer(men,women);
+
+
+
+            /*System.out.println("PRIIIIIIIIINT");
+            ArrayList<Femme> w = new ArrayList<>();  // Femmes avec la list de pref modifiee
+
+            for(int k=0; k<PLAYSET;k++){  //set les pref lists
+                Femme temp = women.get(k);
+                for(int i=0 ; i<temp.pref_list.size();i++){
+                    Homme mari = temp.getBounded();
+                    if(mari == temp.pref_list.get(i)){
+                        temp.pref_list.remove(i);
+                        temp.pref_list.add(0,mari);
+                        w.add(temp);
+                    }
+                }
+            }*/
+            /*for(int k=0; k<PLAYSET;k++){
+                Femme f = w.get(k);
+                System.out.println("FEMME "+ k + " est mariee a "+ f.getBounded().getId());
+            }*/
+
+            //System.out.println("Pref apres modification");
+
+            /*for(int k = 0; k < PLAYSET; k++){ // Print prefs
                 Homme m = men.get(k);
                 System.out.println("HOMME " + k);
                 galeShapley.write("H"+k+" " + m.pref_list+"\n");
 
                 m.printPrefList();
-                Femme f = women.get(k);
-                System.out.println("FEMME " + k);
-                galeShapley.write("F"+k+" " + f.pref_list+"\n");
-                galeShapley.write("\n");
-                f.printPrefList();
-            }
-
-            // Fonction qui affiche tous les mariages stables
-            //allMariagesStablesToFile(men,women,men.size(),mariagesStables);
-
-            Gale_Shapley(men);
-
-            for(int k = 0; k < PLAYSET; k++){
-                men.get(k).clear();
-                women.get(k).clear();
-            }
-
-            System.out.println("-------  MARIAGES STABLES  -------");
-
-            allMariagesStables(men,women,men.size());
-
-            for(int k = 0; k < PLAYSET; k++){ // Print prefs
-                Homme m = men.get(k);
-                System.out.println("HOMME " + k);
-                galeShapley.write("H"+k+" " + m.pref_list+"\n");
-
-                m.printPrefList();
-                Femme f = women.get(k);
+                Femme f = w.get(k);
                 System.out.println("FEMME " + k);
                 //f.setPrefList();
                 galeShapley.write("F"+k+" " + f.pref_list+"\n");
@@ -83,29 +134,32 @@ public class Main {
                 f.printPrefList();
             }
 
-
-
             for(int k = 0; k < PLAYSET; k++){
                 men.get(k).clear();
                 women.get(k).clear();
             }
+            Gale_Shapley(men);
 
-            System.out.println("-------  GALE SHAP INV  -------");
-            Gale_Shapley_inverse(women);
+            System.out.println();
+            System.out.println();*/
 
-            /*ArrayList<Homme> m = new ArrayList<>();
-            ArrayList<Femme> w = new ArrayList<>();
+            /*ArrayList<Integer> list = new ArrayList<>();
 
-            for(int i=0 ; i<women.size();i++){
-                w.add(women.get(i));
-                m.add(men.get(i));
+            for(int i = 0; i <10 ; i++){
+                list.add(i);
             }
 
-            for(int k=0; k<PLAYSET;k++){
-                Femme temp = w.get(k);
+            for(int i=0;i<10;i++){
+                if(list.get(i)==2){
+                    list.remove(i);
+                    list.add(0,2);
+                }
+            }
 
 
-            }*/
+
+            System.out.println(list);*/
+
 
             /*
             System.out.println();
@@ -133,89 +187,36 @@ public class Main {
 
         }
 
+        System.out.println("Amelioration "+amelioration);
+        System.out.println("Egalite "+egalite);
+        System.out.println("Deception "+deception);
+
         mariagesStables.close();
         galeShapley.close();
-
-        /** Regarde si l'instabilité est detectée (sur 3 personnes)*/
-        /*Femme f = men.get(2).getBounded();
-        men.get(2).set(men.get(1).getBounded());
-        men.get(2).getBounded().set(men.get(2));
-        f.set(men.get(1));
-        men.get(1).set(f);
-
-        Femme f2 = men.get(2).getBounded();
-        men.get(2).set(men.get(0).getBounded());
-        men.get(2).getBounded().set(men.get(2));
-        f2.set(men.get(0));
-        men.get(0).set(f2);
-
-        System.out.println("En trichant " +  is_Stable(women));
-
-        for(int k = 0; k < men.size(); k++){ // Print couples
-            Homme m = men.get(k);
-            System.out.println("HOMME " + m.getId() + " & FEMME " + m.getBounded().getId());
-        }*/
-
     }
-
-    /** Fonctions qui affiche toutes les permutations de mariages stables */
-    public static void allMariagesStablesToFile(ArrayList<Homme> hommes, ArrayList<Femme> femmes, int size, FileWriter file) throws Exception{
-        // if size becomes 1 then prints the obtained
-        // permutation
-        if (size == 1 ){
-            ArrayList<Homme> h = new ArrayList<>();
-            ArrayList<Femme> f = new ArrayList<>();
-            ArrayList<String> couples = new ArrayList<>();
-            for (int i = 0; i < femmes.size(); i++){
-                //f.get(i).getBounded().set(f.get(i));
-                //h.get(i).set(f.get(i));
-                h.add(hommes.get(i));
-                f.add(femmes.get(i));
-                hommes.get(i).setBounded(femmes.get(i));
-                femmes.get(i).setBounded(hommes.get(i));
-            }
-            if(is_Stable(f)){
-                for(int i=0; i<h.size();i++){
-                    couples.add(h.get(i).getId()+""+f.get(i).getId());
-                }
-
-                //System.out.println(couples);
-                file.write(couples+"\n");
-                //System.out.println(h);
-                //System.out.println(f);
-                //System.out.println();
-            }
-            /*for (int i = 0; i < femmes.size(); i++) { // Loop through every name/phone number combo
-                array3.add(hommes.get(i).getId()+""+femmes.get(i).getId());
-                //array3.add(hommes.get(i));
-                //array3.add(femmes.get(i)); // Concat the two, and add it
-            }*/
-            //is_Stable(femmes);
-            //System.out.println(array3);
-        }
-
-        for (int i = 0; i < size; i++) {
-            allMariagesStablesToFile(hommes,femmes,size - 1,file);
-            // if size is odd, swap 0th i.e (first) and
-            // (size-1)th i.e (last) element
-            if (size % 2 == 1) {
-                Femme temp = femmes.get(0);
-                femmes.set(0,femmes.get(size-1));
-                femmes.set(size-1,temp);
-            }
-            // If size is even, swap ith
-            // and (size-1)th i.e last element
-            else {
-                Femme temp = femmes.get(i);
-                femmes.set(i,femmes.get(size-1));
-                femmes.set(size-1,temp);
-            }
-        }
-
+    public static void checkAmelioration(ArrayList<Homme> men, ArrayList<Femme> women){
 
     }
 
     /** Gale_Shapley algo, procédure mariage stable classique */
+    public static void affichage_Listes_Pref(ArrayList<Homme> men, ArrayList<Femme> women){
+        for(int k = 0; k < PLAYSET; k++){ // Print prefs
+            Homme m = men.get(k);
+            System.out.println("HOMME " + k);
+            m.printPrefList();
+
+            Femme f = women.get(k);
+            System.out.println("FEMME " + k);
+            f.printPrefList();
+        }
+    }
+
+    public static void nettoyer(ArrayList<Homme> men, ArrayList<Femme> women){
+        for(int k = 0; k < PLAYSET; k++){
+            men.get(k).clear();
+            women.get(k).clear();
+        }
+    }
 
     public static boolean is_Stable(ArrayList<Femme> femmes){ // on passe l'array femme car elle garde intacte la liste des hommes
         for(Femme f : femmes){ // Pour chaque femme, vérifier si elle est en situation de jalousie justifiée
@@ -235,147 +236,4 @@ public class Main {
         return true;
     }
 
-    public static void Gale_Shapley_inverse(ArrayList<Femme> femmes){
-        ArrayList<Femme> Q = new ArrayList<>();
-        Q.addAll(femmes);
-
-        //System.out.println("Q size = " + Q.size());
-        while (Q.size() > 0){
-            Femme femme = Q.remove(0);
-            if(femme.getBounded() == null) {
-                Homme pref = femme.getFirstPrefList();
-                Femme evince = femme.ask(pref);
-                if(evince != null){
-                    //System.out.println("homme = " + evince.getId() + " evince");
-                    evince.removePrefList();
-                    evince.setBounded(null);
-                    Q.add(evince);
-                }
-            }
-        }
-        for(int k = 0; k < femmes.size(); k++){ // Print couples
-            Femme m = femmes.get(k);
-            System.out.println("FEMME " + m.getId() + " & HOMME " + m.getBounded().getId());
-            //m.setPrefList(m.pref_list.add(m.getBounded()));
-        }
-    }
-
-    public static void Gale_Shapley(ArrayList<Homme> hommes){
-        ArrayList<Homme> Q = new ArrayList<>();
-        Q.addAll(hommes);
-
-        //System.out.println("Q size = " + Q.size());
-        while (Q.size() > 0){
-            Homme homme = Q.remove(0);
-            if(homme.getBounded() == null) {
-                Femme pref = homme.getFirstPrefList();
-                Homme evince = homme.ask(pref);
-                if(evince != null){
-                    //System.out.println("homme = " + evince.getId() + " evince");
-                    evince.removePrefList();
-                    evince.setBounded(null);
-                    Q.add(evince);
-                }
-            }
-        }
-        for(int k = 0; k < hommes.size(); k++){ // Print couples
-            Homme m = hommes.get(k);
-            System.out.println("HOMME " + m.getId() + " & FEMME " + m.getBounded().getId());
-        }
-    }
-
-    /** All permutations of Pref List */
-    public static ArrayList<Integer> allPermutations(ArrayList<Femme> femmes, int size) {
-        // if size becomes 1 then prints the obtained
-        // permutation
-        ArrayList<Integer> permutations = new ArrayList<>();
-        if (size == 1 ){
-            ArrayList<Femme> f = new ArrayList<>();
-
-            for (int i = 0; i < femmes.size(); i++){
-                f.add(femmes.get(i));
-                permutations.add(f.get(i).getId());
-            }
-
-        }
-
-        for (int i = 0; i < size; i++) {
-            allPermutations(femmes,size - 1);
-            // if size is odd, swap 0th i.e (first) and
-            // (size-1)th i.e (last) element
-            if (size % 2 == 1) {
-                Femme temp = femmes.get(0);
-                femmes.set(0,femmes.get(size-1));
-                femmes.set(size-1,temp);
-            }
-            // If size is even, swap ith
-            // and (size-1)th i.e last element
-            else {
-                Femme temp = femmes.get(i);
-                femmes.set(i,femmes.get(size-1));
-                femmes.set(size-1,temp);
-            }
-        }
-        return permutations;
-    }
-
-    public static void allMariagesStables(ArrayList<Homme> hommes, ArrayList<Femme> femmes, int size) {
-        // if size becomes 1 then prints the obtained
-        // permutation
-        ArrayList<Homme> h1 = new ArrayList<>(); //copie
-        ArrayList<Femme> f1 = new ArrayList<>();
-
-        for(int i=0 ; i<femmes.size();i++){
-            h1.add(hommes.get(i));
-            f1.add(femmes.get(i));
-        }
-
-        if (size == 1 ){
-            ArrayList<Homme> h = new ArrayList<>();
-            ArrayList<Femme> f = new ArrayList<>();
-            ArrayList<String> couples = new ArrayList<>();
-            for (int i = 0; i < femmes.size(); i++){
-                //f.get(i).getBounded().set(f.get(i));
-                //h.get(i).set(f.get(i));
-                h.add(hommes.get(i));
-                f.add(femmes.get(i));
-                hommes.get(i).setBounded(femmes.get(i));
-                femmes.get(i).setBounded(hommes.get(i));
-            }
-            if(is_Stable(f)){
-                for(int i=0; i<h.size();i++){
-                    couples.add(h.get(i).getId()+""+f.get(i).getId());
-                }
-                System.out.println(couples);
-                //System.out.println(h);
-                //System.out.println(f);
-                //System.out.println();
-            }
-            /*for (int i = 0; i < femmes.size(); i++) { // Loop through every name/phone number combo
-                array3.add(hommes.get(i).getId()+""+femmes.get(i).getId());
-                //array3.add(hommes.get(i));
-                //array3.add(femmes.get(i)); // Concat the two, and add it
-            }*/
-            //is_Stable(femmes);
-            //System.out.println(array3);
-        }
-
-        for (int i = 0; i < size; i++) {
-            allMariagesStables(h1,f1,size - 1);
-            // if size is odd, swap 0th i.e (first) and
-            // (size-1)th i.e (last) element
-            if (size % 2 == 1) {
-                Femme temp = femmes.get(0);
-                f1.set(0,f1.get(size-1));
-                f1.set(size-1,temp);
-            }
-            // If size is even, swap ith
-            // and (size-1)th i.e last element
-            else {
-                Femme temp = femmes.get(i);
-                f1.set(i,f1.get(size-1));
-                f1.set(size-1,temp);
-            }
-        }
-    }
 }
